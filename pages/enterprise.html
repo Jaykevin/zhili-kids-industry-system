@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企业信息 - 织里镇童装产业协同管理信息系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/enterprise.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    
+    <!-- 内联样式，确保企业卡片初始状态正确 -->
+    <style>
+        /* 默认隐藏所有企业卡片 */
+        .enterprise-card {
+            display: none;
+        }
+        
+        /* 默认显示第一页的企业卡片 */
+        .enterprise-card[data-page="1"] {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <img src="../images/logo.png" alt="织里镇童装产业协同管理信息系统">
+                <h1>织里镇童装产业协同管理信息系统</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="../index.html">首页</a></li>
+                    <li><a href="enterprise.html" class="active">企业信息</a></li>
+                    <li><a href="supply-chain.html">供应链协同</a></li>
+                    <li><a href="product.html">产品展示</a></li>
+                    <li><a href="market.html">市场信息</a></li>
+                    <li><a href="recruitment.html">人才招聘</a></li>
+                    <li><a href="training.html">人才培育</a></li>
+                    <li><a href="data-center.html">数据中心</a></li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                <a href="login.html" class="btn btn-login">登录</a>
+                <a href="register.html" class="btn btn-register">注册</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb container">
+        <a href="../index.html">首页</a> &gt; 企业信息
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="container">
+        <!-- 企业检索区 -->
+        <section class="search-section">
+            <h2>企业检索</h2>
+            <div class="search-box">
+                <form id="enterprise-search">
+                    <div class="search-row">
+                        <div class="search-field">
+                            <label for="enterprise-name">企业名称</label>
+                            <input type="text" id="enterprise-name" placeholder="请输入企业名称">
+                        </div>
+                        <div class="search-field">
+                            <label for="enterprise-type">企业类型</label>
+                            <select id="enterprise-type">
+                                <option value="">全部</option>
+                                <option value="design">设计企业</option>
+                                <option value="manufacture">生产企业</option>
+                                <option value="material">原材料供应</option>
+                                <option value="distribution">销售渠道</option>
+                                <option value="service">配套服务</option>
+                            </select>
+                        </div>
+                        <div class="search-field">
+                            <label for="enterprise-scale">企业规模</label>
+                            <select id="enterprise-scale">
+                                <option value="">全部</option>
+                                <option value="large">大型企业</option>
+                                <option value="medium">中型企业</option>
+                                <option value="small">小型企业</option>
+                                <option value="micro">微型企业</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="search-row">
+                        <div class="search-field">
+                            <label for="enterprise-cert">认证类型</label>
+                            <select id="enterprise-cert">
+                                <option value="">全部</option>
+                                <option value="iso9001">ISO9001质量认证</option>
+                                <option value="iso14001">ISO14001环境认证</option>
+                                <option value="oeko">Oeko-Tex认证</option>
+                                <option value="gots">GOTS有机认证</option>
+                                <option value="other">其他认证</option>
+                            </select>
+                        </div>
+                        <div class="search-field">
+                            <!-- 此处可以放置其他搜索字段 -->
+                        </div>
+                        <div class="search-buttons">
+                            <button type="submit" class="btn-primary">搜索</button>
+                            <button type="reset" class="btn-secondary">重置</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- 企业展示区 -->
+        <section class="enterprise-showcase">
+            <h2>企业展示</h2>
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <span>排序方式：</span>
+                    <a href="#" class="active">综合排序</a>
+                    <a href="#">注册时间</a>
+                    <a href="#">企业规模</a>
+                    <a href="#">认证数量</a>
+                </div>
+                <div class="view-toggle">
+                    <button class="active" data-view="grid"><i class="bi bi-grid"></i></button>
+                    <button data-view="list"><i class="bi bi-list-ul"></i></button>
+                </div>
+            </div>
+
+            <!-- 企业列表 -->
+            <div class="enterprise-list grid-view">
+                <!-- 第1页企业 -->
+                <!-- 企业卡片 1 -->
+                <div class="enterprise-card" data-page="1">
+                    <div class="enterprise-logo">
+                        <img src="../images/company/company-logo1.jpg" alt="浙江童趣服饰有限公司">
+                    </div>
+                    <div class="enterprise-info">
+                        <h3>浙江童趣服饰有限公司</h3>
+                        <p class="enterprise-tags">
+                            <span class="tag type">生产企业</span>
+                            <span class="tag scale">大型企业</span>
+                            <span class="tag cert">ISO9001</span>
+                        </p>
+                        <p class="enterprise-brief">专注于3-12岁儿童服装的设计和生产，年产能超过200万件，产品远销欧美和东南亚市场。</p>
+                        <div class="enterprise-contact">
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇开发区创业大道88号</p>
+                            <p><i class="bi bi-telephone"></i> 0572-12345678</p>
+                        </div>
+                        <div class="enterprise-actions">
+                            <a href="#" class="btn-outline">查看详情</a>
+                            <a href="#" class="btn-primary">联系企业</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 企业卡片 2 -->
+                <div class="enterprise-card" data-page="1">
+                    <div class="enterprise-logo">
+                        <img src="../images/company/company-logo2.jpg" alt="湖州小森林童装设计工作室">
+                    </div>
+                    <div class="enterprise-info">
+                        <h3>湖州小森林童装设计工作室</h3>
+                        <p class="enterprise-tags">
+                            <span class="tag type">设计企业</span>
+                            <span class="tag scale">中型企业</span>
+                            <span class="tag cert">GOTS认证</span>
+                        </p>
+                        <p class="enterprise-brief">专注于环保、可持续的童装设计，每年推出4个系列，倡导天然环保的穿着理念。</p>
+                        <div class="enterprise-contact">
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇时尚产业园C区12号</p>
+                            <p><i class="bi bi-telephone"></i> 0572-87654321</p>
+                        </div>
+                        <div class="enterprise-actions">
+                            <a href="#" class="btn-outline">查看详情</a>
+                            <a href="#" class="btn-primary">联系企业</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 企业卡片 3 -->
+                <div class="enterprise-card" data-page="1">
+                    <div class="enterprise-logo">
+                        <img src="../images/company/company-logo3.jpg" alt="织里优质面料有限公司">
+                    </div>
+                    <div class="enterprise-info">
+                        <h3>织里优质面料有限公司</h3>
+                        <p class="enterprise-tags">
+                            <span class="tag type">原材料供应</span>
+                            <span class="tag scale">大型企业</span>
+                            <span class="tag cert">Oeko-Tex</span>
+                        </p>
+                        <p class="enterprise-brief">提供各类高品质童装面料，包括棉、麻、丝、毛等天然材质，以及功能性面料。</p>
+                        <div class="enterprise-contact">
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇工业园区纺织路56号</p>
+                            <p><i class="bi bi-telephone"></i> 0572-56781234</p>
+                        </div>
+                        <div class="enterprise-actions">
+                            <a href="#" class="btn-outline">查看详情</a>
+                            <a href="#" class="btn-primary">联系企业</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 企业卡片 4 -->
+                <div class="enterprise-card" data-page="1">
+                    <div class="enterprise-logo">
+                        <img src="../images/company/company-logo4.jpg" alt="快乐童年服饰有限公司">
+                    </div>
+                    <div class="enterprise-info">
+                        <h3>快乐童年服饰有限公司</h3>
+                        <p class="enterprise-tags">
+                            <span class="tag type">生产企业</span>
+                            <span class="tag scale">中型企业</span>
+                            <span class="tag cert">ISO9001</span>
+                        </p>
+                        <p class="enterprise-brief">专注于婴幼儿服装的研发与生产，采用天然有机面料，关注婴幼儿肌肤健康。</p>
+                        <div class="enterprise-contact">
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇产业园A区23号</p>
+                            <p><i class="bi bi-telephone"></i> 0572-98765432</p>
+                        </div>
+                        <div class="enterprise-actions">
+                            <a href="#" class="btn-outline">查看详情</a>
+                            <a href="#" class="btn-primary">联系企业</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 企业卡片 5 -->
+                <div class="enterprise-card" data-page="1">
+                    <div class="enterprise-logo">
+                        <img src="../images/company/company-logo5.jpg" alt="彩虹童装设计有限公司">
+                    </div>
+                    <div class="enterprise-info">
+                        <h3>彩虹童装设计有限公司</h3>
+                        <p class="enterprise-tags">
+                            <span class="tag type">设计企业</span>
+                            <span class="tag scale">小型企业</span>
+                            <span class="tag cert">GOTS认证</span>
+                        </p>
+                        <p class="enterprise-brief">致力于创新、时尚的童装设计，专注于2-10岁儿童服装，设计风格活泼多彩。</p>
+                        <div class="enterprise-contact">
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇创意园B栋301室</p>
+                            <p><i class="bi bi-telephone"></i> 0572-65432198</p>
+                        </div>
+                        <div class="enterprise-actions">
+                            <a href="#" class="btn-outline">查看详情</a>
+                            <a href="#" class="btn-primary">联系企业</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 企业卡片 6 -->
+                <div class="enterprise-card" data-page="1">
+                    <div class="enterprise-logo">
+                        <img src="../images/company/company-logo6.jpg" alt="湖州星光童装贸易有限公司">
+                    </div>
+                    <div class="enterprise-info">
+                        <h3>湖州星光童装贸易有限公司</h3>
+                        <p class="enterprise-tags">
+                            <span class="tag type">销售渠道</span>
+                            <span class="tag scale">大型企业</span>
+                            <span class="tag cert">ISO9001</span>
+                        </p>
+                        <p class="enterprise-brief">专业童装批发销售渠道，拥有线上线下多个销售平台，年销售额超过5亿元。</p>
+                        <div class="enterprise-contact">
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇商贸城A区108号</p>
+                            <p><i class="bi bi-telephone"></i> 0572-87654321</p>
+                        </div>
+                        <div class="enterprise-actions">
+                            <a href="#" class="btn-outline">查看详情</a>
+                            <a href="#" class="btn-primary">联系企业</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第2页企业 -->
+                <!-- 企业卡片 7 -->
+                <div class="enterprise-card" data-page="2">
+                    <div class="enterprise-logo">
+                        <img src="../images/company/company-logo7.jpg" alt="织里环保纺织品有限公司">
+                    </div>
+                    <div class="enterprise-info">
+                        <h3>织里环保纺织品有限公司</h3>
+                        <p class="enterprise-tags">
+                            <span class="tag type">原材料供应</span>
+                            <span class="tag scale">中型企业</span>
+                            <span class="tag cert">Oeko-Tex</span>
+                        </p>
+                        <p class="enterprise-brief">专注于环保童装面料的研发与生产，使用有机棉及可降解材料，符合国际环保标准。</p>
+                        <div class="enterprise-contact">
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇生态产业园C区15号</p>
+                            <p><i class="bi bi-telephone"></i> 0572-76543210</p>
+                        </div>
+                        <div class="enterprise-actions">
+                            <a href="#" class="btn-outline">查看详情</a>
+                            <a href="#" class="btn-primary">联系企业</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 企业卡片 8 -->
+                <div class="enterprise-card" data-page="2">
+                    <div class="enterprise-logo">
+                        <img src="../images/company/company-logo8.jpg" alt="童梦服饰有限公司">
+                    </div>
+                    <div class="enterprise-info">
+                        <h3>童梦服饰有限公司</h3>
+                        <p class="enterprise-tags">
+                            <span class="tag type">生产企业</span>
+                            <span class="tag scale">小型企业</span>
+                            <span class="tag cert">ISO14001</span>
+                        </p>
+                        <p class="enterprise-brief">专注于童装定制服务，提供幼儿园、学校校服及特殊场合儿童服装的设计与生产。</p>
+                        <div class="enterprise-contact">
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇纺织工业园D区45号</p>
+                            <p><i class="bi bi-telephone"></i> 0572-23456789</p>
+                        </div>
+                        <div class="enterprise-actions">
+                            <a href="#" class="btn-outline">查看详情</a>
+                            <a href="#" class="btn-primary">联系企业</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 企业卡片 9 -->
+                <div class="enterprise-card" data-page="2">
+                    <div class="enterprise-logo">
+                        <img src="../images/company/company-logo9.jpg" alt="浙江童装印花有限公司">
+                    </div>
+                    <div class="enterprise-info">
+                        <h3>浙江童装印花有限公司</h3>
+                        <p class="enterprise-tags">
+                            <span class="tag type">配套服务</span>
+                            <span class="tag scale">中型企业</span>
+                            <span class="tag cert">ISO9001</span>
+                        </p>
+                        <p class="enterprise-brief">专业提供童装印花、刺绣、烫画等工艺服务，拥有先进的数码印花设备和工艺技术。</p>
+                        <div class="enterprise-contact">
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇科技园B区67号</p>
+                            <p><i class="bi bi-telephone"></i> 0572-34567890</p>
+                        </div>
+                        <div class="enterprise-actions">
+                            <a href="#" class="btn-outline">查看详情</a>
+                            <a href="#" class="btn-primary">联系企业</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 企业卡片 10 -->
+                <div class="enterprise-card" data-page="2">
+                    <div class="enterprise-logo">
+                        <img src="../images/company/company-logo10.jpg" alt="织里创意童装设计工作室">
+                    </div>
+                    <div class="enterprise-info">
+                        <h3>织里创意童装设计工作室</h3>
+                        <p class="enterprise-tags">
+                            <span class="tag type">设计企业</span>
+                            <span class="tag scale">小型企业</span>
+                            <span class="tag cert">无认证</span>
+                        </p>
+                        <p class="enterprise-brief">由年轻设计师组成的创意团队，专注于创新童装设计，提供设计咨询和样衣开发服务。</p>
+                        <div class="enterprise-contact">
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇创业园A栋505室</p>
+                            <p><i class="bi bi-telephone"></i> 0572-45678901</p>
+                        </div>
+                        <div class="enterprise-actions">
+                            <a href="#" class="btn-outline">查看详情</a>
+                            <a href="#" class="btn-primary">联系企业</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 企业卡片 11 -->
+                <div class="enterprise-card" data-page="2">
+                    <div class="enterprise-logo">
+                        <img src="../images/company/company-logo11.jpg" alt="湖州小淘气童装有限公司">
+                    </div>
+                    <div class="enterprise-info">
+                        <h3>湖州小淘气童装有限公司</h3>
+                        <p class="enterprise-tags">
+                            <span class="tag type">生产企业</span>
+                            <span class="tag scale">大型企业</span>
+                            <span class="tag cert">Oeko-Tex</span>
+                        </p>
+                        <p class="enterprise-brief">专注于婴幼儿和学龄前儿童服装的研发与生产，产品以舒适、安全、活泼为设计理念。</p>
+                        <div class="enterprise-contact">
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇工业园区童装大道18号</p>
+                            <p><i class="bi bi-telephone"></i> 0572-56789012</p>
+                        </div>
+                        <div class="enterprise-actions">
+                            <a href="#" class="btn-outline">查看详情</a>
+                            <a href="#" class="btn-primary">联系企业</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 企业卡片 12 -->
+                <div class="enterprise-card" data-page="2">
+                    <div class="enterprise-logo">
+                        <img src="../images/company/company-logo12.jpg" alt="织里精工童装辅料有限公司">
+                    </div>
+                    <div class="enterprise-info">
+                        <h3>织里精工童装辅料有限公司</h3>
+                        <p class="enterprise-tags">
+                            <span class="tag type">原材料供应</span>
+                            <span class="tag scale">中型企业</span>
+                            <span class="tag cert">ISO9001</span>
+                        </p>
+                        <p class="enterprise-brief">专业生产童装纽扣、拉链、标牌等辅料，产品种类丰富，质量可靠，价格合理。</p>
+                        <div class="enterprise-contact">
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇辅料产业园A区28号</p>
+                            <p><i class="bi bi-telephone"></i> 0572-67890123</p>
+                        </div>
+                        <div class="enterprise-actions">
+                            <a href="#" class="btn-outline">查看详情</a>
+                            <a href="#" class="btn-primary">联系企业</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第3页企业 -->
+                <!-- 企业卡片 13 -->
+                <div class="enterprise-card" data-page="3">
+                    <div class="enterprise-logo">
+                        <img src="../images/company/company-logo13.jpg" alt="童爱电商平台有限公司">
+                    </div>
+                    <div class="enterprise-info">
+                        <h3>童爱电商平台有限公司</h3>
+                        <p class="enterprise-tags">
+                            <span class="tag type">销售渠道</span>
+                            <span class="tag scale">大型企业</span>
+                            <span class="tag cert">无认证</span>
+                        </p>
+                        <p class="enterprise-brief">专注于童装电子商务平台的运营，为织里童装企业提供线上销售渠道和数字化营销服务。</p>
+                        <div class="enterprise-contact">
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇电子商务产业园1号楼</p>
+                            <p><i class="bi bi-telephone"></i> 0572-78901234</p>
+                        </div>
+                        <div class="enterprise-actions">
+                            <a href="#" class="btn-outline">查看详情</a>
+                            <a href="#" class="btn-primary">联系企业</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 企业卡片 14 -->
+                <div class="enterprise-card" data-page="3">
+                    <div class="enterprise-logo">
+                        <img src="../images/company/company-logo14.jpg" alt="湖州童装包装印刷有限公司">
+                    </div>
+                    <div class="enterprise-info">
+                        <h3>湖州童装包装印刷有限公司</h3>
+                        <p class="enterprise-tags">
+                            <span class="tag type">配套服务</span>
+                            <span class="tag scale">小型企业</span>
+                            <span class="tag cert">ISO14001</span>
+                        </p>
+                        <p class="enterprise-brief">提供童装包装设计与生产，使用环保材料，提供吊牌、包装盒、手提袋等一站式服务。</p>
+                        <div class="enterprise-contact">
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇包装工业园C区16号</p>
+                            <p><i class="bi bi-telephone"></i> 0572-89012345</p>
+                        </div>
+                        <div class="enterprise-actions">
+                            <a href="#" class="btn-outline">查看详情</a>
+                            <a href="#" class="btn-primary">联系企业</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 企业卡片 15 -->
+                <div class="enterprise-card" data-page="3">
+                    <div class="enterprise-logo">
+                        <img src="../images/company/company-logo15.jpg" alt="浙江童装研发中心">
+                    </div>
+                    <div class="enterprise-info">
+                        <h3>浙江童装研发中心</h3>
+                        <p class="enterprise-tags">
+                            <span class="tag type">设计企业</span>
+                            <span class="tag scale">大型企业</span>
+                            <span class="tag cert">GOTS认证</span>
+                        </p>
+                        <p class="enterprise-brief">童装研发与设计服务机构，提供流行趋势分析、设计开发、技术咨询等专业服务。</p>
+                        <div class="enterprise-contact">
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇科技园A区1号楼</p>
+                            <p><i class="bi bi-telephone"></i> 0572-90123456</p>
+                        </div>
+                        <div class="enterprise-actions">
+                            <a href="#" class="btn-outline">查看详情</a>
+                            <a href="#" class="btn-primary">联系企业</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 企业卡片 16 -->
+                <div class="enterprise-card" data-page="3">
+                    <div class="enterprise-logo">
+                        <img src="../images/company/company-logo16.jpg" alt="织里童装物流配送有限公司">
+                    </div>
+                    <div class="enterprise-info">
+                        <h3>织里童装物流配送有限公司</h3>
+                        <p class="enterprise-tags">
+                            <span class="tag type">配套服务</span>
+                            <span class="tag scale">中型企业</span>
+                            <span class="tag cert">ISO9001</span>
+                        </p>
+                        <p class="enterprise-brief">为织里童装产业提供专业的物流配送服务，覆盖全国各地，提供仓储、配送一体化解决方案。</p>
+                        <div class="enterprise-contact">
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇物流园区B区8号</p>
+                            <p><i class="bi bi-telephone"></i> 0572-01234567</p>
+                        </div>
+                        <div class="enterprise-actions">
+                            <a href="#" class="btn-outline">查看详情</a>
+                            <a href="#" class="btn-primary">联系企业</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分页 -->
+            <div class="pagination">
+                <a href="#" class="prev disabled" data-page="prev"><i class="bi bi-chevron-left"></i></a>
+                <a href="#" class="active" data-page="1">1</a>
+                <a href="#" data-page="2">2</a>
+                <a href="#" data-page="3">3</a>
+                <a href="#" class="next" data-page="next"><i class="bi bi-chevron-right"></i></a>
+            </div>
+            <!-- 调试信息 -->
+            <div id="debug-info" style="margin-top: 20px; padding: 10px; background-color: #f8f9fa; border-radius: 4px; display: none;">
+                <h3>调试信息</h3>
+                <div id="debug-content"></div>
+                <button onclick="document.getElementById('debug-info').style.display = 'none';">关闭</button>
+            </div>
+        </section>
+
+        <!-- 企业认证介绍部分已移除 -->
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="../images/logo-footer.png" alt="织里镇童装产业协同管理信息系统">
+                    <p>织里镇童装产业协同管理信息系统</p>
+                </div>
+                <div class="footer-links">
+                    <div class="link-group">
+                        <h3>关于我们</h3>
+                        <ul>
+                            <li><a href="#">平台介绍</a></li>
+                            <li><a href="#">联系我们</a></li>
+                            <li><a href="#">服务条款</a></li>
+                            <li><a href="#">隐私政策</a></li>
+                        </ul>
+                    </div>
+                    <div class="link-group">
+                        <h3>企业服务</h3>
+                        <ul>
+                            <li><a href="#">企业入驻</a></li>
+                            <li><a href="#">供应链对接</a></li>
+                            <li><a href="#">产品展示</a></li>
+                            <li><a href="#">人才招聘</a></li>
+                        </ul>
+                    </div>
+                    <div class="link-group">
+                        <h3>个人服务</h3>
+                        <ul>
+                            <li><a href="#">求职信息</a></li>
+                            <li><a href="#">技能培训</a></li>
+                            <li><a href="#">设计比赛</a></li>
+                            <li><a href="#">资源下载</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-contact">
+                    <h3>联系方式</h3>
+                    <p><i class="icon-address"></i>浙江省湖州市织里镇XXX路XX号</p>
+                    <p><i class="icon-phone"></i>0572-XXXXXXXX</p>
+                    <p><i class="icon-email"></i>contact@zhili-industry.com</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="icon-weixin"></i></a>
+                        <a href="#" class="social-link"><i class="icon-weibo"></i></a>
+                        <a href="#" class="social-link"><i class="icon-douyin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2023 织里镇童装产业协同管理信息系统 版权所有 浙ICP备XXXXXXXX号</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 企业详情弹窗 -->
+    <div id="enterprise-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div class="enterprise-detail">
+                <div class="enterprise-header">
+                    <div class="enterprise-logo-large">
+                        <img id="modal-logo" src="" alt="企业Logo">
+                    </div>
+                    <div class="enterprise-title">
+                        <h1 id="modal-name">企业名称</h1>
+                        <div class="enterprise-tags" id="modal-tags">
+                            <span class="tag type">企业类型</span>
+                            <span class="tag scale">企业规模</span>
+                            <span class="tag cert">认证信息</span>
+                        </div>
+                        <div class="enterprise-contact-info">
+                            <p><i class="bi bi-geo-alt"></i> <span id="modal-address">企业地址</span></p>
+                            <p><i class="bi bi-telephone"></i> <span id="modal-phone">联系电话</span></p>
+                            <p><i class="bi bi-envelope"></i> <span id="modal-email">企业邮箱</span></p>
+                            <p><i class="bi bi-globe"></i> <span id="modal-website">企业网站</span></p>
+                        </div>
+                        <div class="enterprise-actions">
+                            <a href="#" class="btn btn-primary">联系企业</a>
+                            <a href="#" class="btn btn-outline">关注企业</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 企业介绍 -->
+                <div class="enterprise-section">
+                    <h2>企业介绍</h2>
+                    <div class="enterprise-description" id="modal-description">
+                        <p>这里是企业的详细介绍，包括企业的历史、发展历程、经营理念、企业文化等内容。</p>
+                    </div>
+                </div>
+
+                <!-- 企业认证 -->
+                <div class="enterprise-section">
+                    <h2>企业认证</h2>
+                    <div class="enterprise-certificates" id="modal-certificates">
+                        <!-- 认证信息将通过JS动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalopen 0.3s;
+        }
+        
+        @keyframes modalopen {
+            from {opacity: 0; transform: translateY(-20px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        .modal-close:hover,
+        .modal-close:focus {
+            color: #333;
+            text-decoration: none;
+        }
+        
+        /* 企业详情样式 */
+        .enterprise-logo-large {
+            width: 150px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .enterprise-logo-large img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .enterprise-title {
+            flex: 1;
+        }
+        
+        .enterprise-title h1 {
+            margin: 0 0 15px 0;
+            font-size: 24px;
+            color: #333;
+        }
+        
+        .enterprise-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            gap: 30px;
+        }
+        
+        .enterprise-contact-info {
+            margin-bottom: 20px;
+        }
+        
+        .enterprise-contact-info p {
+            margin: 8px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .enterprise-section {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .enterprise-section h2 {
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+            font-size: 18px;
+        }
+        
+        .enterprise-description {
+            line-height: 1.8;
+            color: #444;
+        }
+        
+        .enterprise-certificates {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .certificate-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .certificate-item i {
+            color: #4caf50;
+            font-size: 16px;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+            
+            .enterprise-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .enterprise-logo-large {
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+
+    <script src="../js/common.js"></script>
+    <script src="../js/pagination.js"></script>
+    <script src="../js/enterprise.js"></script>
+    
+    <!-- 页面加载后立即执行的脚本 -->
+    <script>
+        // 直接在HTML中添加分页处理代码，确保一定能执行
+        window.onload = function() {
+            console.log('页面完全加载完成，执行内联分页处理');
+            
+            // 获取所有分页按钮
+            const pageButtons = document.querySelectorAll('.pagination a');
+            
+            // 为每个分页按钮添加点击事件
+            pageButtons.forEach(function(button) {
+                button.onclick = function(e) {
+                    e.preventDefault();
+                    
+                    // 获取页码
+                    const pageNum = this.getAttribute('data-page');
+                    console.log('点击了页码按钮:', pageNum);
+                    
+                    // 处理页码
+                    if (pageNum === 'prev') {
+                        // 上一页
+                        const activePage = document.querySelector('.pagination a.active');
+                        if (activePage && activePage.previousElementSibling && 
+                            !activePage.previousElementSibling.classList.contains('prev')) {
+                            activePage.previousElementSibling.click();
+                        }
+                    } else if (pageNum === 'next') {
+                        // 下一页
+                        const activePage = document.querySelector('.pagination a.active');
+                        if (activePage && activePage.nextElementSibling && 
+                            !activePage.nextElementSibling.classList.contains('next')) {
+                            activePage.nextElementSibling.click();
+                        }
+                    } else {
+                        // 直接点击页码
+                        // 移除所有active类
+                        pageButtons.forEach(btn => btn.classList.remove('active'));
+                        
+                        // 添加当前按钮的active类
+                        this.classList.add('active');
+                        
+                        // 获取页码
+                        const page = parseInt(pageNum);
+                        
+                        // 显示对应页面的企业卡片
+                        const allCards = document.querySelectorAll('.enterprise-card');
+                        
+                        allCards.forEach(card => {
+                            const cardPage = parseInt(card.getAttribute('data-page'));
+                            if (cardPage === page) {
+                                card.style.display = 'block';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+                        
+                        // 更新上一页/下一页按钮状态
+                        const prevBtn = document.querySelector('.pagination a.prev');
+                        const nextBtn = document.querySelector('.pagination a.next');
+                        
+                        if (page === 1) {
+                            prevBtn.classList.add('disabled');
+                        } else {
+                            prevBtn.classList.remove('disabled');
+                        }
+                        
+                        if (page === 3) { // 总共3页
+                            nextBtn.classList.add('disabled');
+                        } else {
+                            nextBtn.classList.remove('disabled');
+                        }
+                        
+                        // 滚动功能已移除
+                    }
+                    
+                    return false;
+                };
+            });
+        };
+    </script>
+</body>
+</html> 
