@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>织里镇童装产业协同管理信息系统</title>
+    <title>织里镇童装产业协同管理平台</title>
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/style.css">
+    <!-- AI 助手样式 -->
+    <link rel="stylesheet" href="css/ai-assistant.css">
     <!-- 引入Element Plus的CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-plus/dist/index.css" />
     <!-- 引入Bootstrap Icons -->
@@ -13,7 +15,7 @@
     <style>
         /* 确保导航栏样式正确 */
         .main-nav ul {
-            display: flex;
+            display: flex;  
             align-items: center;
             justify-content: center;
             flex-wrap: nowrap;
@@ -92,36 +94,62 @@
             background-color: #4CAF50;
             color: white;
         }
+
+        /* 图二效果：头部右侧仅小头像或登录/注册，禁止用户区撑开 */
+        .header .user-info {
+            flex-shrink: 0;
+            max-width: 200px;
+        }
+        .header .user-info-logged,
+        .header .user-info-logged .user-dropdown-wrap {
+            width: 40px !important;
+            min-width: 40px !important;
+            max-width: 40px !important;
+        }
+        .header .user-info-logged .user-avatar {
+            width: 40px !important;
+            height: 40px !important;
+            max-width: 40px !important;
+            max-height: 40px !important;
+            object-fit: cover !important;
+        }
+        .header .user-dropdown-panel {
+            display: none;
+            position: fixed;
+            left: -9999px;
+        }
     </style>
 </head>
 <body>
-    <div id="app">
-        <!-- 头部导航 -->
-        <header class="header">
-            <div class="container">
-                <div class="logo">
-                    <img src="images/logo.png" alt="织里镇童装产业协同管理信息系统">
-                    <h1>织里镇童装产业协同管理信息系统</h1>
-                </div>
-                <nav class="main-nav">
-                    <ul>
-                        <li><a href="index.html" class="active">首页</a></li>
-                        <li><a href="pages/enterprise.html">企业信息</a></li>
-                        <li><a href="pages/supply-chain.html">供应链协同</a></li>
-                        <li><a href="pages/product.html">产品展示</a></li>
-                        <li><a href="pages/market.html">市场信息</a></li>
-                        <li><a href="pages/recruitment.html">人才招聘</a></li>
-                        <li><a href="pages/training.html">人才培育</a></li>
-                        <li><a href="pages/data-center.html">数据中心</a></li>
-                    </ul>
-                </nav>
-                <div class="user-info">
+    <!-- 头部放在 #app 外，避免 Vue 挂载后覆盖 DOM 导致登录状态在首页不显示 -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <img src="images/logo.png" alt="织里镇童装产业协同管理平台">
+                <h1>织里镇童装产业协同管理平台</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html" class="active">首页</a></li>
+                    <li><a href="pages/enterprise.html">企业信息</a></li>
+                    <li><a href="pages/supply-chain.html">供应链协同</a></li>
+                    <li><a href="pages/product.html">产品展示</a></li>
+                    <li><a href="pages/market.html">市场信息</a></li>
+                    <li><a href="pages/recruitment.html">人才招聘</a></li>
+                    <li><a href="pages/training.html">人才培育</a></li>
+                    <li><a href="pages/data-center.html">数据中心</a></li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                <div class="user-info-guest">
                     <a href="pages/login.html" class="btn btn-login">登录</a>
                     <a href="pages/register.html" class="btn btn-register">注册</a>
                 </div>
             </div>
-        </header>
+        </div>
+    </header>
 
+    <div id="app">
         <!-- 首页Banner -->
         <section class="banner">
             <div class="container">
@@ -537,8 +565,8 @@
             <div class="container">
                 <div class="footer-content">
                     <div class="footer-logo">
-                        <img src="images/logo-footer.png" alt="织里镇童装产业协同管理信息系统">
-                        <h2>织里镇童装产业协同管理信息系统</h2>
+                        <img src="images/logo-footer.png" alt="织里镇童装产业协同管理平台">
+                        <h2>织里镇童装产业协同管理平台</h2>
                     </div>
                     <div class="footer-links">
                         <div class="footer-links-group">
@@ -585,17 +613,21 @@
                     </div>
                 </div>
                 <div class="footer-bottom">
-                    <p>© 2023 织里镇童装产业协同管理信息系统. 保留所有权利.</p>
+                    <p>© 2026 织里镇童装产业协同管理平台. 保留所有权利.</p>
                 </div>
             </div>
         </footer>
     </div>
 
     <!-- 引入Vue 3 -->
-    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.37/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.global.prod.js"></script>
     <!-- 引入Element Plus -->
-    <script src="https://cdn.jsdelivr.net/npm/element-plus"></script>
+    <script src="https://cdn.jsdelivr.net/npm/element-plus@2.6.3"></script>
+    <!-- AI 助手 -->
+    <script src="js/ai-assistant.js"></script>
+
     <!-- 引入主脚本 -->
+    <script src="js/auth-header.js"></script>
     <script src="js/main.js"></script>
 
     <!-- 开发模式切换按钮 -->

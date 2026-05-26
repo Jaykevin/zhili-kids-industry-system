@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>企业信息 - 织里镇童装产业协同管理信息系统</title>
+    <title>企业信息 - 织里镇童装产业协同管理平台</title>
     <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="../css/enterprise.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -26,8 +26,8 @@
     <header class="header">
         <div class="container">
             <div class="logo">
-                <img src="../images/logo.png" alt="织里镇童装产业协同管理信息系统">
-                <h1>织里镇童装产业协同管理信息系统</h1>
+                <img src="../images/logo.png" alt="织里镇童装产业协同管理平台">
+                <h1>织里镇童装产业协同管理平台</h1>
             </div>
             <nav class="main-nav">
                 <ul>
@@ -42,8 +42,10 @@
                 </ul>
             </nav>
             <div class="user-info">
-                <a href="login.html" class="btn btn-login">登录</a>
-                <a href="register.html" class="btn btn-register">注册</a>
+                <div class="user-info-guest">
+                    <a href="login.html" class="btn btn-login">登录</a>
+                    <a href="register.html" class="btn btn-register">注册</a>
+                </div>
             </div>
         </div>
     </header>
@@ -117,10 +119,10 @@
             <div class="filter-bar">
                 <div class="filter-group">
                     <span>排序方式：</span>
-                    <a href="#" class="active">综合排序</a>
-                    <a href="#">注册时间</a>
-                    <a href="#">企业规模</a>
-                    <a href="#">认证数量</a>
+                    <a href="#" class="active" data-sort="default">综合排序</a>
+                    <a href="#" data-sort="createdAt">注册时间</a>
+                    <a href="#" data-sort="scale">企业规模</a>
+                    <a href="#" data-sort="certCount">认证数量</a>
                 </div>
                 <div class="view-toggle">
                     <button class="active" data-view="grid"><i class="bi bi-grid"></i></button>
@@ -128,391 +130,116 @@
                 </div>
             </div>
 
-            <!-- 企业列表 -->
-            <div class="enterprise-list grid-view">
-                <!-- 第1页企业 -->
-                <!-- 企业卡片 1 -->
-                <div class="enterprise-card" data-page="1">
+            <!-- 企业列表（后端可用时由 JS 从 /api/auth/enterprises 动态渲染，后端不可用时显示下方示例） -->
+            <div id="enterpriseListContainer" class="enterprise-list grid-view">
+                <p id="enterpriseListLoading" class="enterprise-list-placeholder">加载中...</p>
+                <p id="enterpriseListEmpty" class="enterprise-list-placeholder" style="display:none;">暂无企业信息</p>
+                <!-- 后端不可用时的静态示例（实际使用中会被 JS 动态内容覆盖） -->
+                <div class="enterprise-card" data-page="1" data-enterprise-id="demo1">
                     <div class="enterprise-logo">
-                        <img src="../images/company/company-logo1.jpg" alt="浙江童趣服饰有限公司">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%23e3f2fd' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%231975c9' font-size='10'%3E织里%3C/text%3E%3C/svg%3E" alt="织里童装有限公司">
                     </div>
                     <div class="enterprise-info">
-                        <h3>浙江童趣服饰有限公司</h3>
-                        <p class="enterprise-tags">
-                            <span class="tag type">生产企业</span>
-                            <span class="tag scale">大型企业</span>
-                            <span class="tag cert">ISO9001</span>
-                        </p>
-                        <p class="enterprise-brief">专注于3-12岁儿童服装的设计和生产，年产能超过200万件，产品远销欧美和东南亚市场。</p>
+                        <h3>织里童装有限公司</h3>
+                        <p class="enterprise-tags"><span class="tag">设计</span><span class="tag">时尚</span></p>
+                        <p class="enterprise-brief">专业生产各类童装，拥有多年童装设计与生产经验，致力于为孩子们提供舒适、时尚的穿着体验。</p>
                         <div class="enterprise-contact">
-                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇开发区创业大道88号</p>
-                            <p><i class="bi bi-telephone"></i> 0572-12345678</p>
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市吴兴区织里镇</p>
+                            <p><i class="bi bi-telephone"></i> 0572-1234567</p>
                         </div>
                         <div class="enterprise-actions">
-                            <a href="#" class="btn-outline">查看详情</a>
-                            <a href="#" class="btn-primary">联系企业</a>
+                            <a href="#" class="btn-outline" data-action="detail">查看详情</a>
+                            <a href="mailto:demo1@example.com" class="btn-primary">联系企业</a>
                         </div>
                     </div>
                 </div>
-
-                <!-- 企业卡片 2 -->
-                <div class="enterprise-card" data-page="1">
+                <div class="enterprise-card" data-page="1" data-enterprise-id="demo2">
                     <div class="enterprise-logo">
-                        <img src="../images/company/company-logo2.jpg" alt="湖州小森林童装设计工作室">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%23f3e5f5' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%237b1fa2' font-size='10'%3E时尚%3C/text%3E%3C/svg%3E" alt="时尚潮童服饰">
                     </div>
                     <div class="enterprise-info">
-                        <h3>湖州小森林童装设计工作室</h3>
-                        <p class="enterprise-tags">
-                            <span class="tag type">设计企业</span>
-                            <span class="tag scale">中型企业</span>
-                            <span class="tag cert">GOTS认证</span>
-                        </p>
-                        <p class="enterprise-brief">专注于环保、可持续的童装设计，每年推出4个系列，倡导天然环保的穿着理念。</p>
+                        <h3>时尚潮童服饰</h3>
+                        <p class="enterprise-tags"><span class="tag">创新</span><span class="tag">潮流</span></p>
+                        <p class="enterprise-brief">专注于潮流童装的设计与品牌运营，融合国际时尚元素，打造独具特色的童装品牌。</p>
                         <div class="enterprise-contact">
-                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇时尚产业园C区12号</p>
-                            <p><i class="bi bi-telephone"></i> 0572-87654321</p>
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市吴兴区织里镇</p>
+                            <p><i class="bi bi-telephone"></i> 0572-2345678</p>
                         </div>
                         <div class="enterprise-actions">
-                            <a href="#" class="btn-outline">查看详情</a>
-                            <a href="#" class="btn-primary">联系企业</a>
+                            <a href="#" class="btn-outline" data-action="detail">查看详情</a>
+                            <a href="mailto:demo2@example.com" class="btn-primary">联系企业</a>
                         </div>
                     </div>
                 </div>
-
-                <!-- 企业卡片 3 -->
-                <div class="enterprise-card" data-page="1">
+                <div class="enterprise-card" data-page="1" data-enterprise-id="demo3">
                     <div class="enterprise-logo">
-                        <img src="../images/company/company-logo3.jpg" alt="织里优质面料有限公司">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%23e8f5e9' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23388e3c' font-size='10'%3E环保%3C/text%3E%3C/svg%3E" alt="环保童装坊">
                     </div>
                     <div class="enterprise-info">
-                        <h3>织里优质面料有限公司</h3>
-                        <p class="enterprise-tags">
-                            <span class="tag type">原材料供应</span>
-                            <span class="tag scale">大型企业</span>
-                            <span class="tag cert">Oeko-Tex</span>
-                        </p>
-                        <p class="enterprise-brief">提供各类高品质童装面料，包括棉、麻、丝、毛等天然材质，以及功能性面料。</p>
+                        <h3>环保童装坊</h3>
+                        <p class="enterprise-tags"><span class="tag">环保</span><span class="tag">有机棉</span></p>
+                        <p class="enterprise-brief">采用天然有机棉面料，专注生产环保舒适的婴幼儿服装，呵护宝宝健康成长。</p>
                         <div class="enterprise-contact">
-                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇工业园区纺织路56号</p>
-                            <p><i class="bi bi-telephone"></i> 0572-56781234</p>
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市吴兴区织里镇</p>
+                            <p><i class="bi bi-telephone"></i> 0572-3456789</p>
                         </div>
                         <div class="enterprise-actions">
-                            <a href="#" class="btn-outline">查看详情</a>
-                            <a href="#" class="btn-primary">联系企业</a>
+                            <a href="#" class="btn-outline" data-action="detail">查看详情</a>
+                            <a href="mailto:demo3@example.com" class="btn-primary">联系企业</a>
                         </div>
                     </div>
                 </div>
-
-                <!-- 企业卡片 4 -->
-                <div class="enterprise-card" data-page="1">
+                <div class="enterprise-card" data-page="2" data-enterprise-id="demo4">
                     <div class="enterprise-logo">
-                        <img src="../images/company/company-logo4.jpg" alt="快乐童年服饰有限公司">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%23fff3e0' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23f57c00' font-size='10'%3E出口%3C/text%3E%3C/svg%3E" alt="出口童装制衣厂">
                     </div>
                     <div class="enterprise-info">
-                        <h3>快乐童年服饰有限公司</h3>
-                        <p class="enterprise-tags">
-                            <span class="tag type">生产企业</span>
-                            <span class="tag scale">中型企业</span>
-                            <span class="tag cert">ISO9001</span>
-                        </p>
-                        <p class="enterprise-brief">专注于婴幼儿服装的研发与生产，采用天然有机面料，关注婴幼儿肌肤健康。</p>
+                        <h3>出口童装制衣厂</h3>
+                        <p class="enterprise-tags"><span class="tag">出口</span><span class="tag">加工</span></p>
+                        <p class="enterprise-brief">专业从事童装出口加工，拥有完善的生产线和出口资质，产品远销欧美市场。</p>
                         <div class="enterprise-contact">
-                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇产业园A区23号</p>
-                            <p><i class="bi bi-telephone"></i> 0572-98765432</p>
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市吴兴区织里镇</p>
+                            <p><i class="bi bi-telephone"></i> 0572-4567890</p>
                         </div>
                         <div class="enterprise-actions">
-                            <a href="#" class="btn-outline">查看详情</a>
-                            <a href="#" class="btn-primary">联系企业</a>
+                            <a href="#" class="btn-outline" data-action="detail">查看详情</a>
+                            <a href="mailto:demo4@example.com" class="btn-primary">联系企业</a>
                         </div>
                     </div>
                 </div>
-                
-                <!-- 企业卡片 5 -->
-                <div class="enterprise-card" data-page="1">
+                <div class="enterprise-card" data-page="2" data-enterprise-id="demo5">
                     <div class="enterprise-logo">
-                        <img src="../images/company/company-logo5.jpg" alt="彩虹童装设计有限公司">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%23fce4ec' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23c2185b' font-size='10'%3E公主%3C/text%3E%3C/svg%3E" alt="公主日记童装">
                     </div>
                     <div class="enterprise-info">
-                        <h3>彩虹童装设计有限公司</h3>
-                        <p class="enterprise-tags">
-                            <span class="tag type">设计企业</span>
-                            <span class="tag scale">小型企业</span>
-                            <span class="tag cert">GOTS认证</span>
-                        </p>
-                        <p class="enterprise-brief">致力于创新、时尚的童装设计，专注于2-10岁儿童服装，设计风格活泼多彩。</p>
+                        <h3>公主日记童装</h3>
+                        <p class="enterprise-tags"><span class="tag">公主</span><span class="tag">甜美</span></p>
+                        <p class="enterprise-brief">专注于女童公主裙、甜美风格童装的设计与生产，满足小女孩的公主梦想。</p>
                         <div class="enterprise-contact">
-                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇创意园B栋301室</p>
-                            <p><i class="bi bi-telephone"></i> 0572-65432198</p>
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市吴兴区织里镇</p>
+                            <p><i class="bi bi-telephone"></i> 0572-5678901</p>
                         </div>
                         <div class="enterprise-actions">
-                            <a href="#" class="btn-outline">查看详情</a>
-                            <a href="#" class="btn-primary">联系企业</a>
+                            <a href="#" class="btn-outline" data-action="detail">查看详情</a>
+                            <a href="mailto:demo5@example.com" class="btn-primary">联系企业</a>
                         </div>
                     </div>
                 </div>
-                
-                <!-- 企业卡片 6 -->
-                <div class="enterprise-card" data-page="1">
+                <div class="enterprise-card" data-page="2" data-enterprise-id="demo6">
                     <div class="enterprise-logo">
-                        <img src="../images/company/company-logo6.jpg" alt="湖州星光童装贸易有限公司">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%23e0f7fa' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%2300897b' font-size='10'%3E运动%3C/text%3E%3C/svg%3E" alt="运动童装专营店">
                     </div>
                     <div class="enterprise-info">
-                        <h3>湖州星光童装贸易有限公司</h3>
-                        <p class="enterprise-tags">
-                            <span class="tag type">销售渠道</span>
-                            <span class="tag scale">大型企业</span>
-                            <span class="tag cert">ISO9001</span>
-                        </p>
-                        <p class="enterprise-brief">专业童装批发销售渠道，拥有线上线下多个销售平台，年销售额超过5亿元。</p>
+                        <h3>运动童装专营店</h3>
+                        <p class="enterprise-tags"><span class="tag">运动</span><span class="tag">休闲</span></p>
+                        <p class="enterprise-brief">专业生产运动休闲类童装，适合儿童日常穿着和户外活动，舒适透气易打理。</p>
                         <div class="enterprise-contact">
-                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇商贸城A区108号</p>
-                            <p><i class="bi bi-telephone"></i> 0572-87654321</p>
+                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市吴兴区织里镇</p>
+                            <p><i class="bi bi-telephone"></i> 0572-6789012</p>
                         </div>
                         <div class="enterprise-actions">
-                            <a href="#" class="btn-outline">查看详情</a>
-                            <a href="#" class="btn-primary">联系企业</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 第2页企业 -->
-                <!-- 企业卡片 7 -->
-                <div class="enterprise-card" data-page="2">
-                    <div class="enterprise-logo">
-                        <img src="../images/company/company-logo7.jpg" alt="织里环保纺织品有限公司">
-                    </div>
-                    <div class="enterprise-info">
-                        <h3>织里环保纺织品有限公司</h3>
-                        <p class="enterprise-tags">
-                            <span class="tag type">原材料供应</span>
-                            <span class="tag scale">中型企业</span>
-                            <span class="tag cert">Oeko-Tex</span>
-                        </p>
-                        <p class="enterprise-brief">专注于环保童装面料的研发与生产，使用有机棉及可降解材料，符合国际环保标准。</p>
-                        <div class="enterprise-contact">
-                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇生态产业园C区15号</p>
-                            <p><i class="bi bi-telephone"></i> 0572-76543210</p>
-                        </div>
-                        <div class="enterprise-actions">
-                            <a href="#" class="btn-outline">查看详情</a>
-                            <a href="#" class="btn-primary">联系企业</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 企业卡片 8 -->
-                <div class="enterprise-card" data-page="2">
-                    <div class="enterprise-logo">
-                        <img src="../images/company/company-logo8.jpg" alt="童梦服饰有限公司">
-                    </div>
-                    <div class="enterprise-info">
-                        <h3>童梦服饰有限公司</h3>
-                        <p class="enterprise-tags">
-                            <span class="tag type">生产企业</span>
-                            <span class="tag scale">小型企业</span>
-                            <span class="tag cert">ISO14001</span>
-                        </p>
-                        <p class="enterprise-brief">专注于童装定制服务，提供幼儿园、学校校服及特殊场合儿童服装的设计与生产。</p>
-                        <div class="enterprise-contact">
-                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇纺织工业园D区45号</p>
-                            <p><i class="bi bi-telephone"></i> 0572-23456789</p>
-                        </div>
-                        <div class="enterprise-actions">
-                            <a href="#" class="btn-outline">查看详情</a>
-                            <a href="#" class="btn-primary">联系企业</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 企业卡片 9 -->
-                <div class="enterprise-card" data-page="2">
-                    <div class="enterprise-logo">
-                        <img src="../images/company/company-logo9.jpg" alt="浙江童装印花有限公司">
-                    </div>
-                    <div class="enterprise-info">
-                        <h3>浙江童装印花有限公司</h3>
-                        <p class="enterprise-tags">
-                            <span class="tag type">配套服务</span>
-                            <span class="tag scale">中型企业</span>
-                            <span class="tag cert">ISO9001</span>
-                        </p>
-                        <p class="enterprise-brief">专业提供童装印花、刺绣、烫画等工艺服务，拥有先进的数码印花设备和工艺技术。</p>
-                        <div class="enterprise-contact">
-                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇科技园B区67号</p>
-                            <p><i class="bi bi-telephone"></i> 0572-34567890</p>
-                        </div>
-                        <div class="enterprise-actions">
-                            <a href="#" class="btn-outline">查看详情</a>
-                            <a href="#" class="btn-primary">联系企业</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 企业卡片 10 -->
-                <div class="enterprise-card" data-page="2">
-                    <div class="enterprise-logo">
-                        <img src="../images/company/company-logo10.jpg" alt="织里创意童装设计工作室">
-                    </div>
-                    <div class="enterprise-info">
-                        <h3>织里创意童装设计工作室</h3>
-                        <p class="enterprise-tags">
-                            <span class="tag type">设计企业</span>
-                            <span class="tag scale">小型企业</span>
-                            <span class="tag cert">无认证</span>
-                        </p>
-                        <p class="enterprise-brief">由年轻设计师组成的创意团队，专注于创新童装设计，提供设计咨询和样衣开发服务。</p>
-                        <div class="enterprise-contact">
-                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇创业园A栋505室</p>
-                            <p><i class="bi bi-telephone"></i> 0572-45678901</p>
-                        </div>
-                        <div class="enterprise-actions">
-                            <a href="#" class="btn-outline">查看详情</a>
-                            <a href="#" class="btn-primary">联系企业</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 企业卡片 11 -->
-                <div class="enterprise-card" data-page="2">
-                    <div class="enterprise-logo">
-                        <img src="../images/company/company-logo11.jpg" alt="湖州小淘气童装有限公司">
-                    </div>
-                    <div class="enterprise-info">
-                        <h3>湖州小淘气童装有限公司</h3>
-                        <p class="enterprise-tags">
-                            <span class="tag type">生产企业</span>
-                            <span class="tag scale">大型企业</span>
-                            <span class="tag cert">Oeko-Tex</span>
-                        </p>
-                        <p class="enterprise-brief">专注于婴幼儿和学龄前儿童服装的研发与生产，产品以舒适、安全、活泼为设计理念。</p>
-                        <div class="enterprise-contact">
-                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇工业园区童装大道18号</p>
-                            <p><i class="bi bi-telephone"></i> 0572-56789012</p>
-                        </div>
-                        <div class="enterprise-actions">
-                            <a href="#" class="btn-outline">查看详情</a>
-                            <a href="#" class="btn-primary">联系企业</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 企业卡片 12 -->
-                <div class="enterprise-card" data-page="2">
-                    <div class="enterprise-logo">
-                        <img src="../images/company/company-logo12.jpg" alt="织里精工童装辅料有限公司">
-                    </div>
-                    <div class="enterprise-info">
-                        <h3>织里精工童装辅料有限公司</h3>
-                        <p class="enterprise-tags">
-                            <span class="tag type">原材料供应</span>
-                            <span class="tag scale">中型企业</span>
-                            <span class="tag cert">ISO9001</span>
-                        </p>
-                        <p class="enterprise-brief">专业生产童装纽扣、拉链、标牌等辅料，产品种类丰富，质量可靠，价格合理。</p>
-                        <div class="enterprise-contact">
-                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇辅料产业园A区28号</p>
-                            <p><i class="bi bi-telephone"></i> 0572-67890123</p>
-                        </div>
-                        <div class="enterprise-actions">
-                            <a href="#" class="btn-outline">查看详情</a>
-                            <a href="#" class="btn-primary">联系企业</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 第3页企业 -->
-                <!-- 企业卡片 13 -->
-                <div class="enterprise-card" data-page="3">
-                    <div class="enterprise-logo">
-                        <img src="../images/company/company-logo13.jpg" alt="童爱电商平台有限公司">
-                    </div>
-                    <div class="enterprise-info">
-                        <h3>童爱电商平台有限公司</h3>
-                        <p class="enterprise-tags">
-                            <span class="tag type">销售渠道</span>
-                            <span class="tag scale">大型企业</span>
-                            <span class="tag cert">无认证</span>
-                        </p>
-                        <p class="enterprise-brief">专注于童装电子商务平台的运营，为织里童装企业提供线上销售渠道和数字化营销服务。</p>
-                        <div class="enterprise-contact">
-                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇电子商务产业园1号楼</p>
-                            <p><i class="bi bi-telephone"></i> 0572-78901234</p>
-                        </div>
-                        <div class="enterprise-actions">
-                            <a href="#" class="btn-outline">查看详情</a>
-                            <a href="#" class="btn-primary">联系企业</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 企业卡片 14 -->
-                <div class="enterprise-card" data-page="3">
-                    <div class="enterprise-logo">
-                        <img src="../images/company/company-logo14.jpg" alt="湖州童装包装印刷有限公司">
-                    </div>
-                    <div class="enterprise-info">
-                        <h3>湖州童装包装印刷有限公司</h3>
-                        <p class="enterprise-tags">
-                            <span class="tag type">配套服务</span>
-                            <span class="tag scale">小型企业</span>
-                            <span class="tag cert">ISO14001</span>
-                        </p>
-                        <p class="enterprise-brief">提供童装包装设计与生产，使用环保材料，提供吊牌、包装盒、手提袋等一站式服务。</p>
-                        <div class="enterprise-contact">
-                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇包装工业园C区16号</p>
-                            <p><i class="bi bi-telephone"></i> 0572-89012345</p>
-                        </div>
-                        <div class="enterprise-actions">
-                            <a href="#" class="btn-outline">查看详情</a>
-                            <a href="#" class="btn-primary">联系企业</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 企业卡片 15 -->
-                <div class="enterprise-card" data-page="3">
-                    <div class="enterprise-logo">
-                        <img src="../images/company/company-logo15.jpg" alt="浙江童装研发中心">
-                    </div>
-                    <div class="enterprise-info">
-                        <h3>浙江童装研发中心</h3>
-                        <p class="enterprise-tags">
-                            <span class="tag type">设计企业</span>
-                            <span class="tag scale">大型企业</span>
-                            <span class="tag cert">GOTS认证</span>
-                        </p>
-                        <p class="enterprise-brief">童装研发与设计服务机构，提供流行趋势分析、设计开发、技术咨询等专业服务。</p>
-                        <div class="enterprise-contact">
-                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇科技园A区1号楼</p>
-                            <p><i class="bi bi-telephone"></i> 0572-90123456</p>
-                        </div>
-                        <div class="enterprise-actions">
-                            <a href="#" class="btn-outline">查看详情</a>
-                            <a href="#" class="btn-primary">联系企业</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 企业卡片 16 -->
-                <div class="enterprise-card" data-page="3">
-                    <div class="enterprise-logo">
-                        <img src="../images/company/company-logo16.jpg" alt="织里童装物流配送有限公司">
-                    </div>
-                    <div class="enterprise-info">
-                        <h3>织里童装物流配送有限公司</h3>
-                        <p class="enterprise-tags">
-                            <span class="tag type">配套服务</span>
-                            <span class="tag scale">中型企业</span>
-                            <span class="tag cert">ISO9001</span>
-                        </p>
-                        <p class="enterprise-brief">为织里童装产业提供专业的物流配送服务，覆盖全国各地，提供仓储、配送一体化解决方案。</p>
-                        <div class="enterprise-contact">
-                            <p><i class="bi bi-geo-alt"></i> 浙江省湖州市织里镇物流园区B区8号</p>
-                            <p><i class="bi bi-telephone"></i> 0572-01234567</p>
-                        </div>
-                        <div class="enterprise-actions">
-                            <a href="#" class="btn-outline">查看详情</a>
-                            <a href="#" class="btn-primary">联系企业</a>
+                            <a href="#" class="btn-outline" data-action="detail">查看详情</a>
+                            <a href="mailto:demo6@example.com" class="btn-primary">联系企业</a>
                         </div>
                     </div>
                 </div>
@@ -542,8 +269,8 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo">
-                    <img src="../images/logo-footer.png" alt="织里镇童装产业协同管理信息系统">
-                    <p>织里镇童装产业协同管理信息系统</p>
+                    <img src="../images/logo-footer.png" alt="织里镇童装产业协同管理平台">
+                    <p>织里镇童装产业协同管理平台</p>
                 </div>
                 <div class="footer-links">
                     <div class="link-group">
@@ -587,7 +314,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2023 织里镇童装产业协同管理信息系统 版权所有 浙ICP备XXXXXXXX号</p>
+                <p>© 2026 织里镇童装产业协同管理平台 版权所有 浙ICP备XXXXXXXX号</p>
             </div>
         </div>
     </footer>
@@ -621,11 +348,12 @@
                     </div>
                 </div>
 
-                <!-- 企业介绍 -->
+                <!-- 企业介绍（长文可展开/收起） -->
                 <div class="enterprise-section">
                     <h2>企业介绍</h2>
-                    <div class="enterprise-description" id="modal-description">
-                        <p>这里是企业的详细介绍，包括企业的历史、发展历程、经营理念、企业文化等内容。</p>
+                    <div class="enterprise-description-wrap">
+                        <div class="enterprise-description collapsed" id="modal-description"></div>
+                        <a href="javascript:void(0)" id="modal-description-toggle" class="description-toggle" style="display:none;">展开全文</a>
                     </div>
                 </div>
 
@@ -791,6 +519,7 @@
         }
     </style>
 
+    <script src="../js/auth-header.js"></script>
     <script src="../js/common.js"></script>
     <script src="../js/pagination.js"></script>
     <script src="../js/enterprise.js"></script>

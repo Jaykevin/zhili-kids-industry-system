@@ -1,3 +1,6 @@
+/* 引入 AI 助手样式 */
+@import url('ai-assistant.css');
+
 /* 全局样式 */
 :root {
     --primary-color: #2c5282;
@@ -225,6 +228,7 @@ ul, ol {
     top: 0;
     z-index: 100;
     transition: all 0.3s ease;
+    overflow: visible;
 }
 
 .header:hover {
@@ -254,6 +258,22 @@ ul, ol {
     padding: 8px 15px;
     flex-wrap: nowrap;
     max-width: 1280px;
+    overflow: visible;
+    /* 防止某一列（如用户信息区）被异常内容撑成半屏高 */
+    min-height: 52px;
+}
+
+/* 顶栏内所有 img：强制限制尺寸，防止 OSS 大图或未加载样式时撑爆布局（子页与首页一致） */
+.header .user-info img {
+    width: 40px !important;
+    height: 40px !important;
+    max-width: 40px !important;
+    max-height: 40px !important;
+    min-width: 0 !important;
+    object-fit: cover !important;
+    border-radius: 50%;
+    flex-shrink: 0;
+    vertical-align: middle;
 }
 
 .logo {
@@ -364,11 +384,130 @@ ul, ol {
     width: 80%;
 }
 
+.cart-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    background: #f44336;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 9px;
+    line-height: 1;
+    vertical-align: super;
+    margin-left: 2px;
+}
+
+/* 通知推送 Toast 提示 */
+.notif-toast {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    padding: 14px 18px;
+    min-width: 280px;
+    max-width: 380px;
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
+    border-left: 4px solid var(--primary-color);
+}
+.notif-toast.show {
+    transform: translateX(0);
+}
+.notif-toast-icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    background: #e8f4fd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    font-size: 18px;
+}
+.notif-toast-body {
+    flex: 1;
+    min-width: 0;
+}
+.notif-toast-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+.notif-toast-content {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* 未读通知角标 */
+.notif-unread-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    background: #f44336;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 9px;
+    line-height: 1;
+    vertical-align: super;
+    margin-left: 2px;
+}
+
+/* Header通知铃铛 */
+.header-notif-entry {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 12px;
+    cursor: pointer;
+}
+.header-notif-entry a {
+    color: #333;
+    font-size: 18px;
+    text-decoration: none;
+}
+.header-notif-entry a:hover {
+    color: var(--primary-color);
+}
+.header-notif-entry .header-badge {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    min-width: 16px;
+    height: 16px;
+    font-size: 10px;
+    padding: 0 4px;
+    background: #e74c3c;
+    z-index: 5;
+}
+
 .user-info {
     display: flex;
     gap: 10px;
     flex-shrink: 0;
     margin-left: 15px;
+    min-width: 0;
+    max-width: 200px;
 }
 
 .user-info a {
@@ -377,6 +516,159 @@ ul, ol {
     white-space: nowrap;
     border-radius: 20px;
     transition: all 0.2s ease;
+}
+
+/* 已登录：用户信息区域（类似 CSDN） */
+.user-info-guest {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.user-info-logged {
+    display: none;
+    align-items: center;
+    margin-left: auto;
+    flex-shrink: 0;
+    width: 40px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+}
+
+/* 头像 + 悬停下拉（wrap 固定 40px） */
+.user-info-logged .user-dropdown-wrap {
+    position: relative;
+    cursor: pointer;
+    overflow: visible;
+    display: block;
+    width: 40px;
+    min-width: 40px;
+    max-width: 40px;
+    flex-shrink: 0;
+}
+
+/* 头像固定 40px，全站统一（含企业信息等页），防止大图或其它 CSS 撑开 */
+.user-info-logged .user-avatar,
+.header .user-info .user-info-logged .user-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    max-width: 40px !important;
+    max-height: 40px !important;
+    border-radius: 50%;
+    object-fit: cover !important;
+    background: var(--border-color);
+    display: block;
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.user-dropdown-wrap:hover .user-avatar {
+    border-color: var(--primary-color);
+}
+
+/* 悬停下拉框：仅悬停时显示，禁止被撑成整页大块 */
+.user-dropdown-wrap .user-dropdown-panel {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: auto;
+    margin-top: 4px;
+    min-width: 200px;
+    max-width: 280px;
+    width: max-content;
+    box-sizing: border-box;
+    padding: 16px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    border: 1px solid var(--border-color);
+    z-index: 9999;
+}
+/* 下拉仅由 JS 在悬停时显示，不用 CSS hover 避免误显示 */
+
+
+.user-dropdown-nickname {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 6px;
+    word-break: break-all;
+}
+
+.user-dropdown-email {
+    font-size: 13px;
+    color: var(--light-text);
+    margin-bottom: 12px;
+    word-break: break-all;
+}
+
+.user-dropdown-panel .btn-profile,
+.user-dropdown-panel .btn-change-password,
+.user-dropdown-panel .btn-work-order,
+.user-dropdown-panel .btn-orders {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--light-text);
+    border-radius: 6px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    background: #fff;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.user-dropdown-panel .btn-profile:hover,
+.user-dropdown-panel .btn-change-password:hover,
+.user-dropdown-panel .btn-work-order:hover,
+.user-dropdown-panel .btn-orders:hover {
+    color: var(--primary-color);
+    background: rgba(66, 153, 225, 0.08);
+    border-color: var(--primary-color);
+}
+
+.user-dropdown-panel .btn-logout {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: var(--light-text);
+    border-radius: 6px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    background: #fff;
+    transition: all 0.2s;
+}
+
+.user-dropdown-panel .btn-logout:hover {
+    color: var(--accent-color);
+    background: #fff5f5;
+    border-color: #feb2b2;
+}
+
+.user-dropdown-panel .btn-refunds {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: var(--light-text);
+    border-radius: 6px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    background: #fff;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.user-dropdown-panel .btn-refunds:hover {
+    color: var(--primary-color);
+    background: rgba(66, 153, 225, 0.08);
+    border-color: var(--primary-color);
 }
 
 /* 面包屑导航 */
@@ -660,6 +952,21 @@ ul, ol {
     border-top: 1px solid #e9ecef;
 }
 
+/* ========== 全局 Toast 通知容器 ========== */
+#globalToastContainer {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    pointer-events: none;
+}
+#globalToastContainer .global-toast {
+    pointer-events: auto;
+}
+
 .footer-bottom p {
     font-size: 13px;
     color: var(--light-text);
@@ -748,4 +1055,4 @@ html {
 /* 锚点定位修正（防止内容被固定导航栏遮挡） */
 :target {
     scroll-margin-top: 80px;
-} 
+}

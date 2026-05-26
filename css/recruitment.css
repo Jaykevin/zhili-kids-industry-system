@@ -1,5 +1,50 @@
 /* 人才招聘页面样式 */
 
+/* 信息按钮未读红点 */
+.btn-info-wrap { position: relative; }
+.info-unread-dot {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    min-width: 18px;
+    height: 18px;
+    line-height: 18px;
+    padding: 0 4px;
+    border-radius: 9px;
+    background: #f56565;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    border: 2px solid #fff;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: unreadPulse 1.5s ease-in-out infinite;
+}
+/* 招聘信息按钮红点 */
+.btn-recruit-wrap { position: relative; }
+.recruit-unread-dot {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #f56565;
+    border: 2px solid #fff;
+    display: inline-block;
+    animation: unreadPulse 1.5s ease-in-out infinite;
+}
+
+.info-unread-dot.small {
+    min-width: 10px;
+    height: 10px;
+    top: 0;
+    right: 0;
+    padding: 0;
+    font-size: 0;
+}
+
 /* 职位搜索区域 */
 .job-search-section {
     background-color: #f8f9fa;
@@ -458,4 +503,92 @@
     .job-actions button {
         flex: 1;
     }
+}
+
+/* 申请职位弹窗 */
+.apply-modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.apply-modal-content {
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 440px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+.apply-modal-content h2 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    color: var(--text-color);
+}
+.apply-job-name {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    color: var(--light-text);
+}
+.apply-modal-close {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+.apply-modal-close:hover {
+    color: #333;
+}
+.apply-modal .form-group {
+    margin-bottom: 16px;
+}
+.apply-modal .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+.apply-modal .form-group .required {
+    color: #e74c3c;
+}
+.apply-modal input[type="file"] {
+    width: 100%;
+    padding: 8px 0;
+    font-size: 14px;
+}
+.resume-preview {
+    margin-top: 10px;
+    max-width: 100%;
+    max-height: 200px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    overflow: hidden;
+}
+.resume-preview img {
+    display: block;
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+}
+.apply-modal-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+.apply-modal-actions .btn-primary,
+.apply-modal-actions .btn-secondary {
+    padding: 8px 20px;
+    font-size: 14px;
 } 

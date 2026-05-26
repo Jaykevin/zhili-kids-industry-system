@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>用户登录 - 织里镇童装产业协同管理信息系统</title>
+    <title>用户登录 - 织里镇童装产业协同管理平台</title>
     <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="../css/login.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -13,8 +13,8 @@
     <header class="header">
         <div class="container">
             <div class="logo">
-                <img src="../images/logo.png" alt="织里镇童装产业协同管理信息系统">
-                <h1>织里镇童装产业协同管理信息系统</h1>
+                <img src="../images/logo.png" alt="织里镇童装产业协同管理平台">
+                <h1>织里镇童装产业协同管理平台</h1>
             </div>
             <nav class="main-nav">
                 <ul>
@@ -29,8 +29,10 @@
                 </ul>
             </nav>
             <div class="user-info">
-                <a href="login.html" class="btn btn-login">登录</a>
-                <a href="register.html" class="btn btn-register">注册</a>
+                <div class="user-info-guest">
+                    <a href="login.html" class="btn btn-login">登录</a>
+                    <a href="register.html" class="btn btn-register">注册</a>
+                </div>
             </div>
         </div>
     </header>
@@ -45,10 +47,10 @@
             
             <form class="login-form">
                 <div class="form-group">
-                    <label for="username">用户名/手机号</label>
+                    <label for="email">邮箱</label>
                     <div class="input-with-icon">
-                        <i class="bi bi-person"></i>
-                        <input type="text" id="username" name="username" placeholder="请输入用户名或手机号" required>
+                        <i class="bi bi-envelope"></i>
+                        <input type="email" id="email" name="email" placeholder="请输入邮箱" required>
                     </div>
                 </div>
                 
@@ -66,25 +68,10 @@
                         <input type="checkbox" id="remember" name="remember">
                         <label for="remember">记住我</label>
                     </div>
-                    <a href="#" class="forgot-password">忘记密码？</a>
+                    <a href="forgot-password.html" class="forgot-password">忘记密码？</a>
                 </div>
                 
                 <button type="submit" class="btn-primary btn-login-submit">登录</button>
-                
-                <div class="login-divider">
-                    <span>或</span>
-                </div>
-                
-                <div class="social-login">
-                    <button type="button" class="btn-social wechat">
-                        <i class="bi bi-wechat"></i>
-                        微信登录
-                    </button>
-                    <button type="button" class="btn-social alipay">
-                        <i class="bi bi-alipay"></i>
-                        支付宝登录
-                    </button>
-                </div>
                 
                 <div class="register-link">
                     还没有账号？<a href="register.html">立即注册</a>
@@ -98,8 +85,8 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo">
-                    <img src="../images/logo-footer.png" alt="织里镇童装产业协同管理信息系统">
-                    <p>织里镇童装产业协同管理信息系统</p>
+                    <img src="../images/logo-footer.png" alt="织里镇童装产业协同管理平台">
+                    <p>织里镇童装产业协同管理平台</p>
                 </div>
                 <div class="footer-links">
                     <div class="link-group">
@@ -143,11 +130,12 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2023 织里镇童装产业协同管理信息系统 版权所有 浙ICP备XXXXXXXX号</p>
+                <p>© 2026 织里镇童装产业协同管理平台 版权所有 浙ICP备XXXXXXXX号</p>
             </div>
         </div>
     </footer>
 
-    <script src="../js/login.js"></script>
+    <script src="../js/auth-header.js?v=3"></script>
+    <script src="../js/login.js?v=4"></script>
 </body>
 </html> 

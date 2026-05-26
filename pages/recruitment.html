@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>人才招聘 - 织里镇童装产业协同管理信息系统</title>
+    <title>人才招聘 - 织里镇童装产业协同管理平台</title>
     <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="../css/recruitment.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -13,8 +13,8 @@
     <header class="header">
         <div class="container">
             <div class="logo">
-                <img src="../images/logo.png" alt="织里镇童装产业协同管理信息系统">
-                <h1>织里镇童装产业协同管理信息系统</h1>
+                <img src="../images/logo.png" alt="织里镇童装产业协同管理平台">
+                <h1>织里镇童装产业协同管理平台</h1>
             </div>
             <nav class="main-nav">
                 <ul>
@@ -29,8 +29,10 @@
                 </ul>
             </nav>
             <div class="user-info">
-                <a href="login.html" class="btn btn-login">登录</a>
-                <a href="register.html" class="btn btn-register">注册</a>
+                <div class="user-info-guest">
+                    <a href="login.html" class="btn btn-login">登录</a>
+                    <a href="register.html" class="btn btn-register">注册</a>
+                </div>
             </div>
         </div>
     </header>
@@ -42,9 +44,22 @@
 
     <!-- 主要内容区 -->
     <main class="container">
+        <!-- 企业待审核横幅 -->
+        <div id="enterpriseStatusBanner" style="display:none; margin: 16px 0; padding: 14px 20px; border-radius: 8px; font-size: 14px; line-height: 1.6; background: #fffbeb; border: 1px solid #fde68a;">
+            <strong style="color:#92400e;">&#x26A0; 提示：</strong>
+            <span id="enterpriseStatusMsg" style="color:#92400e;"></span>
+        </div>
         <!-- 招聘信息搜索区 -->
         <section class="job-search-section">
-            <h2>职位搜索</h2>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <h2 style="margin:0;">职位搜索</h2>
+                <div style="display:flex;gap:10px;">
+                    <a href="my-positions.html" class="btn btn-outline" id="btnAddPosition" style="display:none;"><i class="bi bi-plus-lg"></i> 添加岗位</a>
+                    <a href="recruitment-resumes.html" class="btn btn-outline btn-recruit-wrap" id="btnRecruitmentInfo" style="display:none;"><i class="bi bi-file-earmark-person"></i> 招聘信息<span class="recruit-unread-dot" id="recruitUnreadDot" style="display:none;"></span></a>
+                    <a href="recruitment-resumes.html" class="btn btn-outline" id="btnMyApplications" style="display:none;"><i class="bi bi-file-earmark-text"></i> 已投简历</a>
+                    <a href="job-info.html" class="btn btn-outline btn-info-wrap" id="btnJobInfo" style="display:none;"><i class="bi bi-info-circle"></i> 信息<span class="info-unread-dot" id="infoUnreadDot" style="display:none;"></span></a>
+                </div>
+            </div>
             <div class="search-box">
                 <form id="job-search">
                     <div class="search-row">
@@ -67,11 +82,11 @@
                             <label for="job-experience">工作经验</label>
                             <select id="job-experience">
                                 <option value="">不限</option>
-                                <option value="fresh">应届生</option>
-                                <option value="1-3">1-3年</option>
-                                <option value="3-5">3-5年</option>
-                                <option value="5-10">5-10年</option>
-                                <option value="10+">10年以上</option>
+                                <option value="应届毕业生">应届毕业生</option>
+                                <option value="1-3年">1-3年</option>
+                                <option value="3-5年">3-5年</option>
+                                <option value="5-10年">5-10年</option>
+                                <option value="10年以上">10年以上</option>
                             </select>
                         </div>
                     </div>
@@ -80,11 +95,11 @@
                             <label for="job-education">学历要求</label>
                             <select id="job-education">
                                 <option value="">不限</option>
-                                <option value="high-school">高中及以下</option>
-                                <option value="college">大专</option>
-                                <option value="bachelor">本科</option>
-                                <option value="master">硕士</option>
-                                <option value="doctor">博士</option>
+                                <option value="高中及以下">高中及以下</option>
+                                <option value="大专">大专</option>
+                                <option value="本科">本科</option>
+                                <option value="硕士">硕士</option>
+                                <option value="博士">博士</option>
                             </select>
                         </div>
                         <div class="search-field">
@@ -126,230 +141,8 @@
 
         <!-- 职位列表 -->
         <section class="job-list-section" id="job-list-section">
-            <!-- 职位卡片1 -->
-            <div class="job-card">
-                <div class="job-header">
-                    <div class="job-title">
-                        <h3>童装设计师</h3>
-                        <span class="job-salary">10K-15K</span>
-                    </div>
-                    <div class="job-company">
-                        <img src="../images/company/company-logo1.jpg" alt="浙江童趣服饰有限公司">
-                        <span>浙江童趣服饰有限公司</span>
-                    </div>
-                </div>
-                <div class="job-info">
-                    <div class="job-tags">
-                        <span class="tag"><i class="bi bi-geo-alt"></i> 湖州市织里镇</span>
-                        <span class="tag"><i class="bi bi-briefcase"></i> 3-5年</span>
-                        <span class="tag"><i class="bi bi-mortarboard"></i> 本科</span>
-                        <span class="tag"><i class="bi bi-people"></i> 5人</span>
-                    </div>
-                    <div class="job-desc">
-                        <p>负责童装产品的设计与开发，包括款式设计、面料选择、工艺指导等，具有良好的色彩感觉和创新能力，熟悉童装市场趋势。</p>
-                    </div>
-                    <div class="job-skills">
-                        <span class="skill">Adobe Illustrator</span>
-                        <span class="skill">服装设计</span>
-                        <span class="skill">面料开发</span>
-                        <span class="skill">趋势分析</span>
-                    </div>
-                </div>
-                <div class="job-footer">
-                    <span class="job-date">发布于 2023-07-10</span>
-                    <div class="job-actions">
-                        <button class="btn-outline"><i class="bi bi-star"></i> 收藏</button>
-                        <button class="btn-primary"><i class="bi bi-send"></i> 立即申请</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 职位卡片2 -->
-            <div class="job-card">
-                <div class="job-header">
-                    <div class="job-title">
-                        <h3>童装生产主管</h3>
-                        <span class="job-salary">15K-20K</span>
-                    </div>
-                    <div class="job-company">
-                        <img src="../images/company/company-logo5.jpg" alt="湖州小森林童装设计工作室">
-                        <span>湖州小森林童装设计工作室</span>
-                    </div>
-                </div>
-                <div class="job-info">
-                    <div class="job-tags">
-                        <span class="tag"><i class="bi bi-geo-alt"></i> 湖州市织里镇</span>
-                        <span class="tag"><i class="bi bi-briefcase"></i> 5-10年</span>
-                        <span class="tag"><i class="bi bi-mortarboard"></i> 大专</span>
-                        <span class="tag"><i class="bi bi-people"></i> 2人</span>
-                    </div>
-                    <div class="job-desc">
-                        <p>负责童装生产车间管理，协调生产进度，确保产品质量，优化生产流程，具有丰富的服装生产管理经验，熟悉各类服装工艺。</p>
-                    </div>
-                    <div class="job-skills">
-                        <span class="skill">生产管理</span>
-                        <span class="skill">质量控制</span>
-                        <span class="skill">团队管理</span>
-                        <span class="skill">工艺优化</span>
-                    </div>
-                </div>
-                <div class="job-footer">
-                    <span class="job-date">发布于 2023-07-08</span>
-                    <div class="job-actions">
-                        <button class="btn-outline"><i class="bi bi-star"></i> 收藏</button>
-                        <button class="btn-primary"><i class="bi bi-send"></i> 立即申请</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 职位卡片3 -->
-            <div class="job-card">
-                <div class="job-header">
-                    <div class="job-title">
-                        <h3>童装电商运营专员</h3>
-                        <span class="job-salary">8K-12K</span>
-                    </div>
-                    <div class="job-company">
-                        <img src="../images/company/company-logo8.jpg" alt="织里优质面料有限公司">
-                        <span>织里优质面料有限公司</span>
-                    </div>
-                </div>
-                <div class="job-info">
-                    <div class="job-tags">
-                        <span class="tag"><i class="bi bi-geo-alt"></i> 湖州市织里镇</span>
-                        <span class="tag"><i class="bi bi-briefcase"></i> 1-3年</span>
-                        <span class="tag"><i class="bi bi-mortarboard"></i> 本科</span>
-                        <span class="tag"><i class="bi bi-people"></i> 3人</span>
-                    </div>
-                    <div class="job-desc">
-                        <p>负责公司童装产品的电商平台运营，包括店铺管理、产品上架、活动策划、客户服务等，具有电商运营经验，熟悉主流电商平台。</p>
-                    </div>
-                    <div class="job-skills">
-                        <span class="skill">电商运营</span>
-                        <span class="skill">内容营销</span>
-                        <span class="skill">数据分析</span>
-                        <span class="skill">客户服务</span>
-                    </div>
-                </div>
-                <div class="job-footer">
-                    <span class="job-date">发布于 2023-07-05</span>
-                    <div class="job-actions">
-                        <button class="btn-outline"><i class="bi bi-star"></i> 收藏</button>
-                        <button class="btn-primary"><i class="bi bi-send"></i> 立即申请</button>
-                    </div>
-                </div>
-            </div>
-            <!-- 批量新增岗位 START -->
-            <div class="job-card">
-                <div class="job-header">
-                    <div class="job-title">
-                        <h3>童装打版师</h3>
-                        <span class="job-salary">7K-10K</span>
-                    </div>
-                    <div class="job-company">
-                        <img src="../images/company/company-logo2.jpg" alt="织里时尚童装有限公司">
-                        <span>织里时尚童装有限公司</span>
-                    </div>
-                </div>
-                <div class="job-info">
-                    <div class="job-tags">
-                        <span class="tag"><i class="bi bi-geo-alt"></i> 湖州市织里镇</span>
-                        <span class="tag"><i class="bi bi-briefcase"></i> 3-5年</span>
-                        <span class="tag"><i class="bi bi-mortarboard"></i> 大专</span>
-                        <span class="tag"><i class="bi bi-people"></i> 2人</span>
-                    </div>
-                    <div class="job-desc">
-                        <p>负责童装样衣打版，精通纸样制作，能独立完成工艺单。</p>
-                    </div>
-                    <div class="job-skills">
-                        <span class="skill">打版</span>
-                        <span class="skill">纸样</span>
-                        <span class="skill">工艺单</span>
-                        <span class="skill">团队协作</span>
-                    </div>
-                </div>
-                <div class="job-footer">
-                    <span class="job-date">发布于 2023-07-12</span>
-                    <div class="job-actions">
-                        <button class="btn-outline"><i class="bi bi-star"></i> 收藏</button>
-                        <button class="btn-primary"><i class="bi bi-send"></i> 立即申请</button>
-                    </div>
-                </div>
-            </div>
-            <div class="job-card">
-                <div class="job-header">
-                    <div class="job-title">
-                        <h3>童装面料采购专员</h3>
-                        <span class="job-salary">6K-9K</span>
-                    </div>
-                    <div class="job-company">
-                        <img src="../images/company/company-logo3.jpg" alt="湖州优选面料有限公司">
-                        <span>湖州优选面料有限公司</span>
-                    </div>
-                </div>
-                <div class="job-info">
-                    <div class="job-tags">
-                        <span class="tag"><i class="bi bi-geo-alt"></i> 湖州市织里镇</span>
-                        <span class="tag"><i class="bi bi-briefcase"></i> 1-3年</span>
-                        <span class="tag"><i class="bi bi-mortarboard"></i> 本科</span>
-                        <span class="tag"><i class="bi bi-people"></i> 1人</span>
-                    </div>
-                    <div class="job-desc">
-                        <p>负责童装面料采购，供应商开发与管理，成本控制。</p>
-                    </div>
-                    <div class="job-skills">
-                        <span class="skill">采购</span>
-                        <span class="skill">供应链</span>
-                        <span class="skill">成本控制</span>
-                        <span class="skill">谈判</span>
-                    </div>
-                </div>
-                <div class="job-footer">
-                    <span class="job-date">发布于 2023-07-13</span>
-                    <div class="job-actions">
-                        <button class="btn-outline"><i class="bi bi-star"></i> 收藏</button>
-                        <button class="btn-primary"><i class="bi bi-send"></i> 立即申请</button>
-                    </div>
-                </div>
-            </div>
-            <div class="job-card">
-                <div class="job-header">
-                    <div class="job-title">
-                        <h3>童装质检员</h3>
-                        <span class="job-salary">5K-8K</span>
-                    </div>
-                    <div class="job-company">
-                        <img src="../images/company/company-logo4.jpg" alt="湖州童乐服饰有限公司">
-                        <span>湖州童乐服饰有限公司</span>
-                    </div>
-                </div>
-                <div class="job-info">
-                    <div class="job-tags">
-                        <span class="tag"><i class="bi bi-geo-alt"></i> 湖州市织里镇</span>
-                        <span class="tag"><i class="bi bi-briefcase"></i> 1-3年</span>
-                        <span class="tag"><i class="bi bi-mortarboard"></i> 高中及以下</span>
-                        <span class="tag"><i class="bi bi-people"></i> 3人</span>
-                    </div>
-                    <div class="job-desc">
-                        <p>负责童装成品的质量检验，确保产品符合标准。</p>
-                    </div>
-                    <div class="job-skills">
-                        <span class="skill">质检</span>
-                        <span class="skill">细心</span>
-                        <span class="skill">标准化</span>
-                        <span class="skill">责任心</span>
-                    </div>
-                </div>
-                <div class="job-footer">
-                    <span class="job-date">发布于 2023-07-14</span>
-                    <div class="job-actions">
-                        <button class="btn-outline"><i class="bi bi-star"></i> 收藏</button>
-                        <button class="btn-primary"><i class="bi bi-send"></i> 立即申请</button>
-                    </div>
-                </div>
-            </div>
-            <!-- 其余16个岗位省略，实际插入时请补齐20个不同岗位 -->
-            <!-- 批量新增岗位 END -->
+            <!-- 职位列表将通过JS动态加载 -->
+            <div class="loading">加载中...</div>
         </section>
 
         <!-- 分页 -->
@@ -416,8 +209,8 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo">
-                    <img src="../images/logo-footer.png" alt="织里镇童装产业协同管理信息系统">
-                    <p>织里镇童装产业协同管理信息系统</p>
+                    <img src="../images/logo-footer.png" alt="织里镇童装产业协同管理平台">
+                    <p>织里镇童装产业协同管理平台</p>
                 </div>
                 <div class="footer-links">
                     <div class="link-group">
@@ -461,11 +254,34 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2023 织里镇童装产业协同管理信息系统 版权所有 浙ICP备XXXXXXXX号</p>
+                <p>© 2026 织里镇童装产业协同管理平台 版权所有 浙ICP备XXXXXXXX号</p>
             </div>
         </div>
     </footer>
 
+    <!-- 申请职位弹窗：上传简历图片 -->
+    <div id="applyJobModal" class="apply-modal" style="display:none;">
+        <div class="apply-modal-content">
+            <span class="apply-modal-close" id="applyModalClose">&times;</span>
+            <h2>申请职位</h2>
+            <p class="apply-job-name" id="applyJobName"></p>
+            <form id="applyJobForm">
+                <input type="hidden" id="applyJobId" name="jobId">
+                <div class="form-group">
+                    <label>上传简历（图片）<span class="required">*</span></label>
+                    <input type="file" id="applyResumeFile" name="resume" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+                    <div class="resume-preview" id="resumePreview"></div>
+                </div>
+                <div class="apply-modal-actions">
+                    <button type="button" class="btn-secondary" id="applyModalCancel">取消</button>
+                    <button type="submit" class="btn-primary" id="applyModalSubmit"><i class="bi bi-send"></i> 完成</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/auth-header.js"></script>
+    <script src="../js/common.js"></script>
     <script src="../js/recruitment.js"></script>
 </body>
 </html> 

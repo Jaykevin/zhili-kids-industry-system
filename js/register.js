@@ -8,6 +8,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let currentStep = 0;
     
+    // API 基础地址
+    const API_BASE = window.ZhiliApi.apiAuth();
+    
+    // 存储上传后的营业执照 URL
+    let licenseImageUrl = '';
+    
     // 下一步按钮点击事件
     if (btnNext) {
         btnNext.addEventListener('click', function() {
@@ -47,8 +53,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // 模拟表单提交
-            simulateSubmit();
+            // 提交注册
+            doRegister();
         });
     }
     
@@ -75,49 +81,47 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // 步骤1表单验证
+    // 步骤1表单验证（与 register.html 一致：邮箱、密码、确认密码、用户类型）
     function validateStep1() {
-        const username = document.getElementById('username').value;
-        const phone = document.getElementById('phone').value;
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
-        
-        // 用户名验证
-        if (!username) {
-            showError('请输入用户名');
-            return false;
-        } else if (username.length < 4 || username.length > 16) {
-            showError('用户名长度应为4-16个字符');
-            return false;
-        }
-        
-        // 手机号验证
-        if (!phone) {
-            showError('请输入手机号码');
-            return false;
-        } else if (!/^1[3-9]\d{9}$/.test(phone)) {
-            showError('请输入正确的手机号码');
+        const emailEl = document.getElementById('email');
+        const passwordEl = document.getElementById('password');
+        const confirmPasswordEl = document.getElementById('confirm-password');
+        if (!emailEl || !passwordEl || !confirmPasswordEl) return false;
+
+        const email = emailEl.value.trim();
+        const password = passwordEl.value;
+        const confirmPassword = confirmPasswordEl.value;
+
+        // 邮箱验证
+        if (!email) {
+            showError('请输入邮箱账号');
             return false;
         }
-        
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showError('请输入正确的邮箱格式');
+            return false;
+        }
+
         // 密码验证
         if (!password) {
             showError('请输入密码');
             return false;
-        } else if (password.length < 8 || password.length > 20) {
+        }
+        if (password.length < 8 || password.length > 20) {
             showError('密码长度应为8-20个字符');
             return false;
         }
-        
+
         // 确认密码验证
         if (!confirmPassword) {
-            showError('请确认密码');
+            showError('请再次输入密码');
             return false;
-        } else if (password !== confirmPassword) {
+        }
+        if (password !== confirmPassword) {
             showError('两次输入的密码不一致');
             return false;
         }
-        
+
         return true;
     }
     
@@ -138,22 +142,27 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 企业用户额外验证
         if (userType === 'enterprise') {
-            const enterpriseName = document.getElementById('enterprise-name').value;
-            const enterpriseLicense = document.getElementById('enterprise-license').value;
-            const licenseUpload = document.getElementById('enterprise-license-upload').files.length;
-            
+            const entNameEl = document.getElementById('enterprise-name');
+            const entLicenseEl = document.getElementById('enterprise-license');
+            const licenseUploadEl = document.getElementById('enterprise-license-upload');
+            const enterpriseName = entNameEl ? entNameEl.value.trim() : '';
+            const enterpriseLicense = entLicenseEl ? entLicenseEl.value.trim() : '';
+            const hasFile = licenseUploadEl && licenseUploadEl.files && licenseUploadEl.files.length > 0;
+
             if (!enterpriseName) {
                 showError('请输入企业名称');
                 return false;
             }
-            
             if (!enterpriseLicense) {
                 showError('请输入营业执照号码');
                 return false;
             }
-            
-            if (licenseUpload === 0) {
-                showError('请上传营业执照');
+            if (!hasFile) {
+                showError('请选择营业执照文件并上传');
+                return false;
+            }
+            if (!licenseImageUrl) {
+                showError('请等待营业执照上传完成后再提交');
                 return false;
             }
         }
@@ -202,22 +211,116 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     }
     
-    // 模拟表单提交
-    function simulateSubmit() {
-        // 显示加载状态
+    // 显示成功信息
+    function showSuccess(message) {
+        let successElement = document.querySelector('.success-message');
+        
+        if (!successElement) {
+            successElement = document.createElement('div');
+            successElement.className = 'success-message';
+            successElement.style.color = '#38a169';
+            successElement.style.fontSize = '14px';
+            successElement.style.marginTop = '10px';
+            successElement.style.padding = '10px';
+            successElement.style.backgroundColor = '#f0fff4';
+            successElement.style.borderRadius = '4px';
+            successElement.style.borderLeft = '3px solid #38a169';
+            
+            const activeStep = document.querySelector('.form-step.active');
+            if (activeStep) {
+                activeStep.insertBefore(successElement, activeStep.firstChild);
+            }
+        }
+        
+        successElement.textContent = message;
+        successElement.style.display = 'block';
+        
+        setTimeout(() => {
+            successElement.style.display = 'none';
+        }, 5000);
+    }
+    
+    // 提交注册（与后端 RegisterRequest 一致：email, password, confirmPassword, code, userType）
+    async function doRegister() {
+        const emailEl = document.getElementById('email');
+        const passwordEl = document.getElementById('password');
+        const confirmPasswordEl = document.getElementById('confirm-password');
+        const verificationCodeEl = document.getElementById('verification-code');
+        if (!emailEl || !passwordEl || !confirmPasswordEl || !verificationCodeEl) {
+            showError('请完善注册信息');
+            return;
+        }
+
+        const email = emailEl.value.trim();
+        const password = passwordEl.value;
+        const confirmPassword = confirmPasswordEl.value;
+        const verificationCode = verificationCodeEl.value.trim();
+        const userTypeRadio = document.querySelector('input[name="user-type"]:checked');
+        const isEnterprise = userTypeRadio && userTypeRadio.value === 'enterprise';
+        const userType = isEnterprise ? 2 : 1;
+
         btnSubmit.textContent = '提交中...';
         btnSubmit.disabled = true;
-        
-        // 模拟网络请求延迟
-        setTimeout(() => {
-            // 切换到成功步骤
-            currentStep++;
-            updateSteps();
+
+        const registerData = {
+            email: email,
+            password: password,
+            confirmPassword: confirmPassword,
+            code: verificationCode,
+            userType: userType
+        };
+
+        if (isEnterprise) {
+            const entName = document.getElementById('enterprise-name');
+            const entLicense = document.getElementById('enterprise-license');
+            if (entName) registerData.enterpriseName = entName.value;
+            if (entLicense) registerData.enterpriseLicense = entLicense.value;
+            if (licenseImageUrl) registerData.licenseImageUrl = licenseImageUrl;
+        }
+
+        try {
+            const response = await fetch(API_BASE + '/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(registerData)
+            });
             
-            // 恢复按钮状态
+            const data = await response.json();
+            
+            if (data.code === 200 || data.code === 0) {
+                // 注册成功
+                if (data.data && data.data.token) {
+                    localStorage.setItem('token', data.data.token);
+                    if (data.data.userInfo) {
+                        localStorage.setItem('userInfo', JSON.stringify(data.data.userInfo));
+                    }
+                }
+                if (typeof window.renderAuthHeader === 'function') window.renderAuthHeader();
+                showSuccess('注册成功！');
+
+                // 企业用户注册：显示待审核提示
+                if (isEnterprise) {
+                    var successMsgEl = document.getElementById('registerSuccessMsg');
+                    if (successMsgEl) {
+                        successMsgEl.textContent = '您的企业账号已提交，需等待管理员审核通过后方可使用招聘、发布商品等企业功能。';
+                    }
+                }
+
+                // 跳转到首页或登录页
+                setTimeout(() => {
+                    window.location.href = '../index.html';
+                }, isEnterprise ? 3000 : 1500);
+            } else {
+                showError(data.message || '注册失败，请稍后重试');
+                btnSubmit.textContent = '提交注册';
+                btnSubmit.disabled = false;
+            }
+        } catch (err) {
+            console.error('注册失败:', err);
+            showError('网络错误，请检查后端服务是否启动');
             btnSubmit.textContent = '提交注册';
             btnSubmit.disabled = false;
-        }, 1500);
+        }
     }
     
     // 密码显示/隐藏功能
@@ -236,52 +339,101 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // 获取验证码按钮功能
+    // 获取验证码按钮功能（发送到步骤1填写的邮箱）
     const btnGetCode = document.querySelector('.btn-get-code');
     if (btnGetCode) {
-        btnGetCode.addEventListener('click', function() {
-            const phone = document.getElementById('phone').value;
-            
-            // 验证手机号
-            if (!phone) {
-                showError('请输入手机号码');
-                return;
-            } else if (!/^1[3-9]\d{9}$/.test(phone)) {
-                showError('请输入正确的手机号码');
+        btnGetCode.addEventListener('click', async function() {
+            const emailEl = document.getElementById('email');
+            if (!emailEl) return;
+            const email = emailEl.value.trim();
+            if (!email) {
+                showError('请先在第一步填写邮箱账号');
                 return;
             }
-            
-            // 禁用按钮并开始倒计时
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showError('请输入正确的邮箱格式');
+                return;
+            }
+
+            const btn = this;
+            btn.disabled = true;
             let countdown = 60;
-            this.disabled = true;
-            this.textContent = `${countdown}秒后重新获取`;
-            
+            btn.textContent = countdown + '秒后重新获取';
+
+            try {
+                const res = await fetch(API_BASE + '/send-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                const data = await res.json();
+                if (data.code === 200 || data.code === 0) {
+                    showSuccess('验证码已发送到您的邮箱');
+                } else {
+                    showError(data.message || '发送验证码失败');
+                    btn.disabled = false;
+                    btn.textContent = '发送验证码';
+                    return;
+                }
+            } catch (err) {
+                console.error(err);
+                showError('网络错误，请检查后端是否启动（端口8080）');
+                btn.disabled = false;
+                btn.textContent = '发送验证码';
+                return;
+            }
+
             const timer = setInterval(() => {
                 countdown--;
-                this.textContent = `${countdown}秒后重新获取`;
-                
+                btn.textContent = countdown + '秒后重新获取';
                 if (countdown <= 0) {
                     clearInterval(timer);
-                    this.disabled = false;
-                    this.textContent = '获取验证码';
+                    btn.disabled = false;
+                    btn.textContent = '发送验证码';
                 }
             }, 1000);
-            
-            // 模拟发送验证码
-            console.log('发送验证码到手机号:', phone);
         });
     }
     
-    // 文件上传功能
+    // 营业执照上传功能 - 使用 OSS 直传
     const fileUpload = document.getElementById('enterprise-license-upload');
     const fileName = document.querySelector('.file-name');
+    const licenseUploadStatus = document.querySelector('.license-upload-status');
     
     if (fileUpload && fileName) {
-        fileUpload.addEventListener('change', function() {
+        fileUpload.addEventListener('change', async function() {
             if (this.files.length > 0) {
-                fileName.textContent = this.files[0].name;
+                const file = this.files[0];
+                fileName.textContent = file.name;
+                
+                // 显示上传状态
+                if (licenseUploadStatus) {
+                    licenseUploadStatus.textContent = '上传中...';
+                    licenseUploadStatus.className = 'license-upload-status uploading';
+                }
+                
+                try {
+                    // 与头像一致：优先 OSS 直传（存入 yingyezhizhao-zhili-kids-system），失败则经后端上传
+                    licenseImageUrl = await window.OssUploader.uploadLicenseWithFallback(file);
+                    if (licenseUploadStatus) {
+                        licenseUploadStatus.textContent = '上传成功';
+                        licenseUploadStatus.className = 'license-upload-status success';
+                    }
+                } catch (err) {
+                    console.error('营业执照上传失败:', err);
+                    licenseImageUrl = '';
+                    if (licenseUploadStatus) {
+                        licenseUploadStatus.textContent = '上传失败: ' + (err.message || '请重试');
+                        licenseUploadStatus.className = 'license-upload-status error';
+                    }
+                }
             } else {
                 fileName.textContent = '';
+                licenseImageUrl = '';
+                if (licenseUploadStatus) {
+                    licenseUploadStatus.textContent = '';
+                    licenseUploadStatus.className = 'license-upload-status';
+                }
             }
         });
     }

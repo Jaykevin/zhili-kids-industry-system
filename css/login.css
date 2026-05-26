@@ -113,68 +113,6 @@
     margin-bottom: 20px;
 }
 
-.login-divider {
-    position: relative;
-    text-align: center;
-    margin: 20px 0;
-}
-
-.login-divider::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background-color: var(--border-color);
-}
-
-.login-divider span {
-    position: relative;
-    background-color: #fff;
-    padding: 0 15px;
-    color: var(--light-text);
-    font-size: 14px;
-}
-
-.social-login {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.btn-social {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px;
-    border: none;
-    border-radius: var(--border-radius);
-    font-size: 14px;
-    cursor: pointer;
-    transition: opacity 0.3s;
-}
-
-.btn-social:hover {
-    opacity: 0.9;
-}
-
-.btn-social i {
-    font-size: 18px;
-}
-
-.wechat {
-    background-color: #07C160;
-    color: white;
-}
-
-.alipay {
-    background-color: #1677FF;
-    color: white;
-}
-
 .register-link {
     text-align: center;
     font-size: 14px;
@@ -190,9 +128,5 @@
 @media (max-width: 576px) {
     .login-box {
         padding: 30px 20px;
-    }
-    
-    .social-login {
-        flex-direction: column;
     }
 } 

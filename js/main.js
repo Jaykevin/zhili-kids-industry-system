@@ -1,5 +1,37 @@
 // 等待DOM加载完成
 document.addEventListener('DOMContentLoaded', function() {
+    // 从API加载首页统计数据
+    async function loadHomepageStats() {
+        try {
+            const response = await fetch('/api/data-center/industry-overview');
+            const result = await response.json();
+            if (result.code === 200 && result.data) {
+                const data = result.data;
+                const dataCards = document.querySelectorAll('.data-content .data-number');
+                if (dataCards.length >= 4) {
+                    dataCards[0].textContent = data.registeredCompanies || '1,256';
+                    if (data.totalOutput) dataCards[1].textContent = data.totalOutput;
+                    if (data.annualProduction) dataCards[2].textContent = data.annualProduction;
+                    if (data.employees) dataCards[3].textContent = data.employees;
+                }
+                const trends = document.querySelectorAll('.data-content .data-trend');
+                if (trends.length >= 4) {
+                    if (data.outputGrowth) {
+                        const firstPercent = trends[0].querySelector('span');
+                        if (firstPercent) firstPercent.textContent = data.outputGrowth;
+                    }
+                    if (data.productionGrowth) {
+                        const secondPercent = trends[2].querySelector('span');
+                        if (secondPercent) secondPercent.textContent = data.productionGrowth;
+                    }
+                }
+            }
+        } catch (e) {
+            console.log('统计数据API暂不可用');
+        }
+    }
+    loadHomepageStats();
+
     // 初始化Vue应用
     const app = Vue.createApp({
         data() {
@@ -149,32 +181,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.bannerInterval = setInterval(() => {
                     this.currentBannerIndex = (this.currentBannerIndex + 1) % this.banners.length;
                     this.updateBannerDisplay();
-                }, 5000); // 5秒切换一次，让用户有更多时间观看
+                }, 5000);
             },
             updateBannerDisplay() {
                 const slides = document.querySelectorAll('.slide');
                 const dots = document.querySelectorAll('.banner-dot');
-                
                 if (!slides.length || !dots.length) return;
-                
-                // 更新滑块显示
                 slides.forEach((slide, index) => {
-                    // 移除所有active类
                     slide.classList.remove('active', 'prev', 'next');
-                    
-                    // 设置当前、上一个和下一个滑块的类
                     if (index === this.currentBannerIndex) {
                         slide.classList.add('active');
-                        
-                        // 重置动画
                         const heading = slide.querySelector('h2');
                         const paragraph = slide.querySelector('p');
-                        
                         if (heading && paragraph) {
-                            // 重置动画效果
                             heading.style.animation = 'none';
                             paragraph.style.animation = 'none';
-                            
                             setTimeout(() => {
                                 heading.style.animation = '';
                                 paragraph.style.animation = '';
@@ -186,8 +207,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         slide.classList.add('next');
                     }
                 });
-                
-                // 更新导航点状态
                 dots.forEach((dot, index) => {
                     if (index === this.currentBannerIndex) {
                         dot.classList.add('active');
@@ -195,14 +214,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         dot.classList.remove('active');
                     }
                 });
-                
-                // 更新进度条效果
                 const activeDot = document.querySelector('.banner-dot.active');
                 if (activeDot) {
-                    // 重置已有的样式
                     activeDot.style.cssText = '';
-                    
-                    // 添加进度动画
                     setTimeout(() => {
                         activeDot.style.animation = 'dotProgress 5s linear';
                     }, 10);
@@ -436,11 +450,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // 挂载Vue应用
     app.mount('#app');
 
+    // Vue 挂载后会接管 #app 内 DOM，需在挂载后重新渲染头部（头像、昵称、退出登录）
+    if (window.renderAuthHeader) window.renderAuthHeader();
+
     // 添加额外的交互效果
     addInteractions();
 
-    // 检测开发环境并初始化stagewise工具栏
-    initStagewise();
+    // Stagewise 工具栏的 CDN 脚本为 ES Module（含 export），用普通 <script> 加载会报
+    // Uncaught SyntaxError: Unexpected token 'export'，并污染控制台；已关闭。
+    // 若需使用，请改为 type="module" 的动态 import 或官方 UMD 包。
+    // initStagewise();
 });
 
 // 添加页面交互效果
@@ -571,39 +590,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.head.appendChild(style);
 });
 
-// 初始化stagewise工具栏
-function initStagewise() {
-    // 检测是否为开发环境
-    const isDevMode = () => {
-        // 检测URL中是否包含开发环境标识
-        return window.location.hostname === 'localhost' || 
-               window.location.hostname === '127.0.0.1' || 
-               window.location.search.includes('dev=true');
-    };
-
-    // 如果是开发环境，加载stagewise工具栏
-    if (isDevMode()) {
-        // 创建stagewise工具栏容器
-        const stagewise = document.createElement('div');
-        stagewise.id = 'stagewise-toolbar';
-        document.body.appendChild(stagewise);
-
-        // 加载stagewise脚本
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/@stagewise/toolbar/dist/index.js';
-        script.onload = function() {
-            if (window.stagewise && window.stagewise.initToolbar) {
-                window.stagewise.initToolbar({
-                    plugins: []
-                });
-                console.log('Stagewise工具栏已初始化');
-            } else {
-                console.error('无法初始化Stagewise工具栏');
-            }
-        };
-        document.head.appendChild(script);
-    }
-} 
+// Stagewise 工具栏（已禁用）：其 dist/index.js 为 ESM，非 module 方式加载会触发 SyntaxError。
+// function initStagewise() { ... }
 
 // 添加高级交互特效
 function addAdvancedEffects() {

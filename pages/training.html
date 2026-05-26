@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>人才培育 - 织里镇童装产业协同管理信息系统</title>
+    <title>人才培育 - 织里镇童装产业协同管理平台</title>
     <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="../css/training.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -13,8 +13,8 @@
     <header class="header">
         <div class="container">
             <div class="logo">
-                <img src="../images/logo.png" alt="织里镇童装产业协同管理信息系统">
-                <h1>织里镇童装产业协同管理信息系统</h1>
+                <img src="../images/logo.png" alt="织里镇童装产业协同管理平台">
+                <h1>织里镇童装产业协同管理平台</h1>
             </div>
             <nav class="main-nav">
                 <ul>
@@ -29,8 +29,10 @@
                 </ul>
             </nav>
             <div class="user-info">
-                <a href="login.html" class="btn btn-login">登录</a>
-                <a href="register.html" class="btn btn-register">注册</a>
+                <div class="user-info-guest">
+                    <a href="login.html" class="btn btn-login">登录</a>
+                    <a href="register.html" class="btn btn-register">注册</a>
+                </div>
             </div>
         </div>
     </header>
@@ -99,348 +101,13 @@
                 </div>
             </div>
             
-            <!-- 课程列表 -->
+            <!-- 课程列表（由 JS 从接口加载并渲染） -->
             <div class="course-list" id="course-list">
-                <!-- 课程卡片1 -->
-                <div class="course-card" data-category="设计类" data-level="中级" data-type="线下课程">
-                    <div class="course-image">
-                        <img src="../images/courses/design_trend.jpg" alt="童装设计趋势">
-                        <span class="course-tag hot">热门</span>
-                    </div>
-                    <div class="course-content">
-                        <h3>童装设计趋势与创新</h3>
-                        <div class="course-info">
-                            <span><i class="bi bi-calendar3"></i> 开课时间：2025-09-01</span>
-                            <span><i class="bi bi-clock"></i> 课程时长：30课时</span>
-                            <span><i class="bi bi-person"></i> 讲师：王教授</span>
-                            <span><i class="bi bi-bar-chart"></i> 难度：中级</span>
-                        </div>
-                        <p class="course-desc">聚焦童装流行趋势与创新设计，提升学员时尚敏感度与设计能力。</p>
-                        <div class="course-footer">
-                            <div class="course-price">
-                                <span class="price">¥1,200</span>
-                                <span class="original-price">¥1,500</span>
-                            </div>
-                            <button class="btn-primary">立即报名</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- 课程卡片2 -->
-                <div class="course-card" data-category="技术类" data-level="进阶级" data-type="线下课程">
-                    <div class="course-image">
-                        <img src="../images/courses/pattern_making.jpg" alt="童装打版">
-                        <span class="course-tag new">新课</span>
-                    </div>
-                    <div class="course-content">
-                        <h3>童装打版与工艺</h3>
-                        <div class="course-info">
-                            <span><i class="bi bi-calendar3"></i> 开课时间：2025-09-10</span>
-                            <span><i class="bi bi-clock"></i> 课程时长：24课时</span>
-                            <span><i class="bi bi-person"></i> 讲师：李工</span>
-                            <span><i class="bi bi-bar-chart"></i> 难度：进阶</span>
-                        </div>
-                        <p class="course-desc">系统讲解童装打版流程与工艺细节，适合有基础的学员提升技能。</p>
-                        <div class="course-footer">
-                            <div class="course-price">
-                                <span class="price">¥1,380</span>
-                                <span class="original-price">¥1,680</span>
-                            </div>
-                            <button class="btn-primary">立即报名</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- 课程卡片3 -->
-                <div class="course-card" data-category="营销类" data-level="中级" data-type="线上课程">
-                    <div class="course-image">
-                        <img src="../images/courses/ecommerce.jpg" alt="童装电商运营">
-                        <span class="course-tag">推荐</span>
-                    </div>
-                    <div class="course-content">
-                        <h3>童装电商运营实战</h3>
-                        <div class="course-info">
-                            <span><i class="bi bi-calendar3"></i> 开课时间：2025-09-15</span>
-                            <span><i class="bi bi-clock"></i> 课程时长：20课时</span>
-                            <span><i class="bi bi-person"></i> 讲师：张经理</span>
-                            <span><i class="bi bi-bar-chart"></i> 难度：中级</span>
-                        </div>
-                        <p class="course-desc">电商平台运营、产品上架、活动策划、客户服务全流程实战。</p>
-                        <div class="course-footer">
-                            <div class="course-price">
-                                <span class="price">¥980</span>
-                                <span class="original-price">¥1,280</span>
-                            </div>
-                            <button class="btn-primary">立即报名</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- 课程卡片4 -->
-                <div class="course-card" data-category="管理类" data-level="高级" data-type="线下课程">
-                    <div class="course-image">
-                        <img src="../images/courses/course4.JPG" alt="童装生产管理">
-                    </div>
-                    <div class="course-content">
-                        <h3>童装生产管理与质量控制</h3>
-                        <div class="course-info">
-                            <span><i class="bi bi-calendar3"></i> 开课时间：2025-09-20</span>
-                            <span><i class="bi bi-clock"></i> 课程时长：28课时</span>
-                            <span><i class="bi bi-person"></i> 讲师：刘总监</span>
-                            <span><i class="bi bi-bar-chart"></i> 难度：高级</span>
-                        </div>
-                        <p class="course-desc">生产流程管理、质量标准、效率提升方法，结合案例分析。</p>
-                        <div class="course-footer">
-                            <div class="course-price">
-                                <span class="price">¥1,380</span>
-                                <span class="original-price">¥1,780</span>
-                            </div>
-                            <button class="btn-primary">立即报名</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- 课程卡片5 -->
-                <div class="course-card" data-category="设计类" data-level="入门级" data-type="线上课程">
-                    <div class="course-image">
-                        <img src="../images/courses/course5.jpg" alt="童装色彩搭配与流行趋势">
-                        <span class="course-tag">推荐</span>
-                    </div>
-                    <div class="course-content">
-                        <h3>童装色彩搭配与流行趋势</h3>
-                        <div class="course-info">
-                            <span><i class="bi bi-calendar3"></i> 开课时间：2025-09-25</span>
-                            <span><i class="bi bi-clock"></i> 课程时长：16课时</span>
-                            <span><i class="bi bi-person"></i> 讲师：陈老师</span>
-                            <span><i class="bi bi-bar-chart"></i> 难度：入门</span>
-                        </div>
-                        <p class="course-desc">学习童装色彩搭配技巧，掌握流行色彩趋势与实用配色方案。</p>
-                        <div class="course-footer">
-                            <div class="course-price">
-                                <span class="price">¥680</span>
-                                <span class="original-price">¥980</span>
-                            </div>
-                            <button class="btn-primary">立即报名</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- 课程卡片6 -->
-                <div class="course-card" data-category="管理类" data-level="进阶级" data-type="混合式">
-                    <div class="course-image">
-                        <img src="../images/courses/course6.jpg" alt="童装品牌建设与市场推广">
-                        <span class="course-tag new">新课</span>
-                    </div>
-                    <div class="course-content">
-                        <h3>童装品牌建设与市场推广</h3>
-                        <div class="course-info">
-                            <span><i class="bi bi-calendar3"></i> 开课时间：2025-10-01</span>
-                            <span><i class="bi bi-clock"></i> 课程时长：18课时</span>
-                            <span><i class="bi bi-person"></i> 讲师：赵老师</span>
-                            <span><i class="bi bi-bar-chart"></i> 难度：进阶</span>
-                        </div>
-                        <p class="course-desc">系统讲解童装品牌定位、品牌故事打造及市场推广策略。</p>
-                        <div class="course-footer">
-                            <div class="course-price">
-                                <span class="price">¥1,080</span>
-                                <span class="original-price">¥1,380</span>
-                            </div>
-                            <button class="btn-primary">立即报名</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- 课程卡片7 -->
-                <div class="course-card" data-category="技术类" data-level="中级" data-type="线下课程">
-                    <div class="course-image">
-                        <img src="../images/courses/course7.jpg" alt="童装面料工艺与创新应用">
-                        <span class="course-tag hot">热门</span>
-                    </div>
-                    <div class="course-content">
-                        <h3>童装面料工艺与创新应用</h3>
-                        <div class="course-info">
-                            <span><i class="bi bi-calendar3"></i> 开课时间：2025-10-05</span>
-                            <span><i class="bi bi-clock"></i> 课程时长：22课时</span>
-                            <span><i class="bi bi-person"></i> 讲师：孙工</span>
-                            <span><i class="bi bi-bar-chart"></i> 难度：中级</span>
-                        </div>
-                        <p class="course-desc">介绍童装常用面料及创新材料，提升面料选择与应用能力。</p>
-                        <div class="course-footer">
-                            <div class="course-price">
-                                <span class="price">¥1,180</span>
-                                <span class="original-price">¥1,480</span>
-                            </div>
-                            <button class="btn-primary">立即报名</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- 课程卡片8 -->
-                <div class="course-card" data-category="营销类" data-level="中级" data-type="线上课程">
-                    <div class="course-image">
-                        <img src="../images/courses/course8.jpg" alt="童装营销与渠道管理">
-                    </div>
-                    <div class="course-content">
-                        <h3>童装营销与渠道管理</h3>
-                        <div class="course-info">
-                            <span><i class="bi bi-calendar3"></i> 开课时间：2025-10-10</span>
-                            <span><i class="bi bi-clock"></i> 课程时长：20课时</span>
-                            <span><i class="bi bi-person"></i> 讲师：钱老师</span>
-                            <span><i class="bi bi-bar-chart"></i> 难度：中级</span>
-                        </div>
-                        <p class="course-desc">童装市场营销策略、渠道建设与管理、品牌推广实战。</p>
-                        <div class="course-footer">
-                            <div class="course-price">
-                                <span class="price">¥1,080</span>
-                                <span class="original-price">¥1,380</span>
-                            </div>
-                            <button class="btn-primary">立即报名</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- 课程卡片9 -->
-                <div class="course-card" data-category="管理类" data-level="高级" data-type="线下课程">
-                    <div class="course-image">
-                        <img src="../images/courses/course9.jpg" alt="童装供应链与生产管理">
-                    </div>
-                    <div class="course-content">
-                        <h3>童装供应链与生产管理</h3>
-                        <div class="course-info">
-                            <span><i class="bi bi-calendar3"></i> 开课时间：2025-10-15</span>
-                            <span><i class="bi bi-clock"></i> 课程时长：26课时</span>
-                            <span><i class="bi bi-person"></i> 讲师：周老师</span>
-                            <span><i class="bi bi-bar-chart"></i> 难度：高级</span>
-                        </div>
-                        <p class="course-desc">从原材料采购到成品交付，系统讲解童装供应链管理。</p>
-                        <div class="course-footer">
-                            <div class="course-price">
-                                <span class="price">¥1,480</span>
-                                <span class="original-price">¥1,880</span>
-                            </div>
-                            <button class="btn-primary">立即报名</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- 课程卡片10 -->
-                <div class="course-card" data-category="管理类" data-level="进阶级" data-type="线上课程">
-                    <div class="course-image">
-                        <img src="../images/courses/course10.jpg" alt="童装成本控制与预算管理">
-                    </div>
-                    <div class="course-content">
-                        <h3>童装成本控制与预算管理</h3>
-                        <div class="course-info">
-                            <span><i class="bi bi-calendar3"></i> 开课时间：2025-10-20</span>
-                            <span><i class="bi bi-clock"></i> 课程时长：14课时</span>
-                            <span><i class="bi bi-person"></i> 讲师：吴老师</span>
-                            <span><i class="bi bi-bar-chart"></i> 难度：进阶</span>
-                        </div>
-                        <p class="course-desc">掌握童装企业成本核算、预算编制与财务管理实务。</p>
-                        <div class="course-footer">
-                            <div class="course-price">
-                                <span class="price">¥880</span>
-                                <span class="original-price">¥1,180</span>
-                            </div>
-                            <button class="btn-primary">立即报名</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- 课程卡片11 -->
-                <div class="course-card" data-category="管理类" data-level="专家级" data-type="混合式">
-                    <div class="course-image">
-                        <img src="../images/courses/course11.jpg" alt="童装创新创业实务">
-                    </div>
-                    <div class="course-content">
-                        <h3>童装创新创业实务</h3>
-                        <div class="course-info">
-                            <span><i class="bi bi-calendar3"></i> 开课时间：2025-10-25</span>
-                            <span><i class="bi bi-clock"></i> 课程时长：18课时</span>
-                            <span><i class="bi bi-person"></i> 讲师：郑老师</span>
-                            <span><i class="bi bi-bar-chart"></i> 难度：专家级</span>
-                        </div>
-                        <p class="course-desc">聚焦童装行业创新创业，案例分析与实战指导。</p>
-                        <div class="course-footer">
-                            <div class="course-price">
-                                <span class="price">¥1,680</span>
-                                <span class="original-price">¥2,080</span>
-                            </div>
-                            <button class="btn-primary">立即报名</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- 课程卡片12 -->
-                <div class="course-card" data-category="营销类" data-level="高级" data-type="线上课程">
-                    <div class="course-image">
-                        <img src="../images/courses/course12.jpg" alt="童装外贸实务与国际市场">
-                    </div>
-                    <div class="course-content">
-                        <h3>童装外贸实务与国际市场</h3>
-                        <div class="course-info">
-                            <span><i class="bi bi-calendar3"></i> 开课时间：2025-11-01</span>
-                            <span><i class="bi bi-clock"></i> 课程时长：20课时</span>
-                            <span><i class="bi bi-person"></i> 讲师：钱经理</span>
-                            <span><i class="bi bi-bar-chart"></i> 难度：高级</span>
-                        </div>
-                        <p class="course-desc">童装出口流程、国际市场开拓与外贸实务操作。</p>
-                        <div class="course-footer">
-                            <div class="course-price">
-                                <span class="price">¥1,580</span>
-                                <span class="original-price">¥1,980</span>
-                            </div>
-                            <button class="btn-primary">立即报名</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- 课程卡片13 -->
-                <div class="course-card" data-category="技术类" data-level="专家级" data-type="线下课程">
-                    <div class="course-image">
-                        <img src="../images/courses/course13.jpg" alt="童装智能制造与数字化转型">
-                    </div>
-                    <div class="course-content">
-                        <h3>童装智能制造与数字化转型</h3>
-                        <div class="course-info">
-                            <span><i class="bi bi-calendar3"></i> 开课时间：2025-11-05</span>
-                            <span><i class="bi bi-clock"></i> 课程时长：22课时</span>
-                            <span><i class="bi bi-person"></i> 讲师：孙博士</span>
-                            <span><i class="bi bi-bar-chart"></i> 难度：专家级</span>
-                        </div>
-                        <p class="course-desc">童装生产智能化、数字化管理与行业转型升级案例。</p>
-                        <div class="course-footer">
-                            <div class="course-price">
-                                <span class="price">¥1,980</span>
-                                <span class="original-price">¥2,480</span>
-                            </div>
-                            <button class="btn-primary">立即报名</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- 课程卡片14 -->
-                <div class="course-card" data-category="营销类" data-level="进阶级" data-type="线上课程">
-                    <div class="course-image">
-                        <img src="../images/courses/course14.jpg" alt="童装社交媒体营销">
-                    </div>
-                    <div class="course-content">
-                        <h3>童装社交媒体营销</h3>
-                        <div class="course-info">
-                            <span><i class="bi bi-calendar3"></i> 开课时间：2025-11-10</span>
-                            <span><i class="bi bi-clock"></i> 课程时长：16课时</span>
-                            <span><i class="bi bi-person"></i> 讲师：李老师</span>
-                            <span><i class="bi bi-bar-chart"></i> 难度：进阶</span>
-                        </div>
-                        <p class="course-desc">新媒体平台运营、内容营销与童装品牌传播技巧。</p>
-                        <div class="course-footer">
-                            <div class="course-price">
-                                <span class="price">¥880</span>
-                                <span class="original-price">¥1,180</span>
-                            </div>
-                            <button class="btn-primary">立即报名</button>
-                        </div>
-                    </div>
-                </div>
+                <div class="loading">加载中...</div>
             </div>
             
-            <!-- 分页 -->
-            <div class="pagination" id="course-pagination">
-                <a href="#" class="prev disabled"><i class="bi bi-chevron-left"></i></a>
-                <a href="#" class="active">1</a>
-                <a href="#">2</a>
-                <a href="#">3</a>
-                <span>...</span>
-                <a href="#">8</a>
-                <a href="#" class="next"><i class="bi bi-chevron-right"></i></a>
-            </div>
+            <!-- 分页（由 JS 在加载课程后生成） -->
+            <div class="pagination" id="course-pagination"></div>
         </section>
 
         <!-- 工作坊区域 -->
@@ -559,8 +226,8 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo">
-                    <img src="../images/logo-footer.png" alt="织里镇童装产业协同管理信息系统">
-                    <p>织里镇童装产业协同管理信息系统</p>
+                    <img src="../images/logo-footer.png" alt="织里镇童装产业协同管理平台">
+                    <p>织里镇童装产业协同管理平台</p>
                 </div>
                 <div class="footer-links">
                     <div class="link-group">
@@ -604,11 +271,103 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2025 织里镇童装产业协同管理信息系统 版权所有 浙ICP备XXXXXXXX号</p>
+                <p>© 2026 织里镇童装产业协同管理平台 版权所有 浙ICP备XXXXXXXX号</p>
             </div>
         </div>
     </footer>
 
+    <!-- 确认订单弹窗 -->
+    <div class="order-modal" id="orderModal" style="display: none;">
+        <div class="order-modal-overlay"></div>
+        <div class="order-modal-content">
+            <div class="order-modal-header">
+                <h2>确认订单</h2>
+                <button class="order-modal-close" id="closeOrderModal">&times;</button>
+            </div>
+            <div class="order-modal-body">
+                <!-- 课程信息 -->
+                <div class="order-section">
+                    <h3>课程信息 <span id="courseItemCount">(1门课程)</span></h3>
+                    <div class="order-course-item" id="orderCourseItem">
+                        <img id="orderCourseImage" src="" alt="" class="course-thumbnail">
+                        <div class="course-details">
+                            <div class="course-title" id="orderCourseName"></div>
+                            <div class="course-spec" id="orderCourseSpec"></div>
+                            <div class="course-price-quantity">
+                                数量：<span id="orderCourseQuantity">1</span>门 × <span id="orderCoursePrice"></span> = <span id="orderCourseTotal"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 收货地址（课程订单不需要，但保留样式） -->
+                <div class="order-section">
+                    <h3>联系信息</h3>
+                    <div class="order-form-group">
+                        <label>姓名：</label>
+                        <input type="text" id="orderReceiverName" placeholder="请输入姓名" value="">
+                    </div>
+                    <div class="order-form-group">
+                        <label>手机号：</label>
+                        <input type="text" id="orderReceiverPhone" placeholder="请输入手机号" value="">
+                    </div>
+                    <div class="order-form-group">
+                        <label>联系地址：</label>
+                        <input type="text" id="orderReceiverAddress" placeholder="请输入联系地址" value="">
+                    </div>
+                </div>
+
+                <!-- 支付方式 -->
+                <div class="order-section">
+                    <h3>支付方式</h3>
+                    <div class="payment-methods">
+                        <div class="payment-method active" data-method="wechat">
+                            <i class="bi bi-wechat"></i>
+                            <span>微信支付</span>
+                            <i class="bi bi-check-circle-fill payment-check"></i>
+                        </div>
+                        <div class="payment-method" data-method="alipay">
+                            <i class="bi bi-credit-card"></i>
+                            <span>支付宝</span>
+                            <i class="bi bi-circle payment-check"></i>
+                        </div>
+                        <div class="payment-method" data-method="bank">
+                            <i class="bi bi-bank"></i>
+                            <span>银行卡</span>
+                            <i class="bi bi-circle payment-check"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 价格汇总 -->
+                <div class="order-summary">
+                    <div class="summary-row">
+                        <span>课程金额：</span>
+                        <span id="summaryCourseAmount">¥0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>优惠金额：</span>
+                        <span id="summaryDiscount">-¥0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>运费：</span>
+                        <span>¥0.00</span>
+                    </div>
+                    <div class="summary-divider"></div>
+                    <div class="summary-total">
+                        <span>订单总计：</span>
+                        <span id="summaryTotalAmount">¥0.00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="order-modal-footer">
+                <button class="btn-confirm-payment" id="btnConfirmPayment">确认支付</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth-header.js"></script>
+    <script src="../js/common.js"></script>
     <script src="../js/training.js"></script>
 </body>
 </html> 

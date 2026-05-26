@@ -1,4 +1,25 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // 从API加载数据中心数据（内联实现，避免作用域嵌套问题）
+    (function fetchData() {
+        fetch('/api/data-center/all')
+            .then(function(res) { return res.json(); })
+            .then(function(result) {
+                if (result.code === 200 && result.data) {
+                    var overview = result.data.industryOverview;
+                    if (overview) {
+                        var kpiNumbers = document.querySelectorAll('.kpi-number');
+                        if (kpiNumbers.length >= 4) {
+                            kpiNumbers[0].textContent = overview.registeredCompanies || kpiNumbers[0].textContent;
+                            kpiNumbers[1].textContent = overview.totalOutput || kpiNumbers[1].textContent;
+                            kpiNumbers[2].textContent = overview.annualProduction || kpiNumbers[2].textContent;
+                            kpiNumbers[3].textContent = overview.employees || kpiNumbers[3].textContent;
+                        }
+                    }
+                }
+            })
+            .catch(function() { console.log('数据中心API暂不可用，使用静态数据'); });
+    })();
+
     // 获取所有导航标签和内容区域
     const navItems = document.querySelectorAll('.data-nav li');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -16,10 +37,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectedNav && selectedContent) {
             selectedNav.classList.add('active');
             selectedContent.classList.add('active');
-            
-            // 更新URL哈希值，但不触发滚动
+
+            // 更新URL哈希值
             history.replaceState(null, null, `#${tabId}`);
-            
+
+            // 滚动到选中的内容区域
+            selectedNav.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
             // 添加内容切换动画
             selectedContent.style.opacity = '0';
             selectedContent.style.transform = 'translateY(20px)';
@@ -174,8 +198,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const easedProgress = easeOutExpo(progress);
                 const currentValue = startValue + easedProgress * (numericValue - startValue);
                 
-                // 根据数值大小决定小数位数
-                const decimals = numericValue > 100 ? 1 : 2;
+                // 有后缀（亿/万/件）按数值大小显示小数，无后缀（纯数字如企业数）不显示小数
+                const decimals = suffix ? (numericValue > 100 ? 1 : 2) : 0;
                 element.textContent = currentValue.toFixed(decimals) + suffix;
                 
                 if (frame < totalFrames) {

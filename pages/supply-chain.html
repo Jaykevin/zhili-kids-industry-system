@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>供应链协同 - 织里镇童装产业协同管理信息系统</title>
+    <title>供应链协同 - 织里镇童装产业协同管理平台</title>
     <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="../css/supply-chain.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -14,8 +14,8 @@
     <header class="header">
         <div class="container">
             <div class="logo">
-                <img src="../images/logo.png" alt="织里镇童装产业协同管理信息系统">
-                <h1>织里镇童装产业协同管理信息系统</h1>
+                <img src="../images/logo.png" alt="织里镇童装产业协同管理平台">
+                <h1>织里镇童装产业协同管理平台</h1>
             </div>
             <nav class="main-nav">
                 <ul>
@@ -30,8 +30,10 @@
                 </ul>
             </nav>
             <div class="user-info">
-                <a href="login.html" class="btn btn-login">登录</a>
-                <a href="register.html" class="btn btn-register">注册</a>
+                <div class="user-info-guest">
+                    <a href="login.html" class="btn btn-login">登录</a>
+                    <a href="register.html" class="btn btn-register">注册</a>
+                </div>
             </div>
         </div>
     </header>
@@ -76,12 +78,6 @@
         <!-- 供需对接区域 -->
         <section class="tab-content active" id="demand-supply">
             <h2>供需对接平台</h2>
-            
-            <!-- 发布需求/供应按钮 -->
-            <div class="action-buttons">
-                <button class="btn-primary"><i class="bi bi-plus-circle"></i> 发布需求</button>
-                <button class="btn-outline"><i class="bi bi-upload"></i> 发布供应</button>
-            </div>
             
             <!-- 筛选器 -->
             <div class="filter-section">
@@ -134,100 +130,94 @@
             <!-- 需求/供应列表 -->
             <div class="demand-supply-list">
                 <div class="list-header">
-                    <div class="header-tab active">需求信息</div>
-                    <div class="header-tab">供应信息</div>
+                    <div class="header-tabs">
+                        <div class="header-tab active" onclick="toggleDemandSupplyList('需求信息')">需求信息</div>
+                        <div class="header-tab" onclick="toggleDemandSupplyList('供应信息')">供应信息</div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn-msg" onclick="SupplyDemandManager.showMyPublishedItems()">
+                            <i class="bi bi-chat-dots-fill"></i> 消息列表
+                        </button>
+                        <button class="btn-primary" onclick="SupplyDemandManager.publishDemand()">
+                            <i class="bi bi-plus-circle"></i> 发布需求
+                        </button>
+                        <button class="btn-outline" onclick="SupplyDemandManager.publishSupply()">
+                            <i class="bi bi-plus-circle"></i> 发布供应
+                        </button>
+                    </div>
                 </div>
                 
-                <!-- 需求卡片列表 -->
+                <!-- 筛选和搜索区域 -->
+                <div class="filter-section">
+                    <div class="filter-form">
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label>类型筛选</label>
+                                <select id="demand-type" onchange="SupplyDemandManager.filterSupplyDemand()">
+                                    <option value="">全部类型</option>
+                                    <option value="material">原材料</option>
+                                    <option value="processing">加工服务</option>
+                                    <option value="design">设计服务</option>
+                                    <option value="accessory">辅料配件</option>
+                                    <option value="logistics">物流服务</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label>状态筛选</label>
+                                <select id="demand-status" onchange="SupplyDemandManager.filterSupplyDemand()">
+                                    <option value="">全部状态</option>
+                                    <option value="open">未对接</option>
+                                    <option value="inprocess">对接中</option>
+                                    <option value="completed">已完成</option>
+                                    <option value="available">可供应</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label>紧急程度</label>
+                                <select id="demand-urgency" onchange="SupplyDemandManager.filterSupplyDemand()">
+                                    <option value="">全部</option>
+                                    <option value="high">紧急</option>
+                                    <option value="medium">一般</option>
+                                    <option value="low">不急</option>
+                                </select>
+                            </div>
+                            <div class="filter-group search-group">
+                                <label>关键词搜索</label>
+                                <div class="search-input">
+                                    <input type="text" id="demand-keyword" placeholder="搜索标题、描述、企业名称..." onkeyup="if(event.key==='Enter') SupplyDemandManager.filterSupplyDemand()">
+                                    <button class="search-btn" onclick="SupplyDemandManager.filterSupplyDemand()">
+                                        <i class="bi bi-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="filter-group">
+                                <button class="btn-reset" onclick="SupplyDemandManager.resetFilter()">
+                                    <i class="bi bi-arrow-clockwise"></i> 重置
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 需求卡片列表（数据将从API动态加载） -->
                 <div class="card-list">
-                    <!-- 需求卡片1 -->
-                    <div class="demand-card">
-                        <div class="card-header">
-                            <span class="card-type material">原材料需求</span>
-                            <span class="card-urgency high">紧急</span>
-                        </div>
-                        <div class="card-body">
-                            <h3>高品质全棉针织面料采购需求</h3>
-                            <div class="card-info">
-                                <p><strong>需求企业：</strong>浙江童趣服饰有限公司</p>
-                                <p><strong>需求描述：</strong>采购40支全棉针织面料，用于2023秋冬款童装生产，颜色要求：白色、浅蓝、粉红，规格：175cm宽，每色各需5000米。</p>
-                                <p><strong>截止日期：</strong>2023-07-15</p>
-                            </div>
-                            <div class="card-tags">
-                                <span class="tag">全棉</span>
-                                <span class="tag">针织面料</span>
-                                <span class="tag">40支</span>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <span class="publish-time">发布时间：2023-06-25</span>
-                            <button class="btn-outline">查看详情</button>
-                            <button class="btn-primary">我要对接</button>
-                        </div>
-                    </div>
-                    
-                    <!-- 需求卡片2 -->
-                    <div class="demand-card">
-                        <div class="card-header">
-                            <span class="card-type processing">加工服务</span>
-                            <span class="card-urgency medium">一般</span>
-                        </div>
-                        <div class="card-body">
-                            <h3>童装印花加工服务需求</h3>
-                            <div class="card-info">
-                                <p><strong>需求企业：</strong>湖州小森林童装设计工作室</p>
-                                <p><strong>需求描述：</strong>寻找童装数码印花加工厂，可承接小批量定制印花，要求环保无毒，色牢度高，交货周期短。</p>
-                                <p><strong>截止日期：</strong>2023-08-01</p>
-                            </div>
-                            <div class="card-tags">
-                                <span class="tag">数码印花</span>
-                                <span class="tag">环保</span>
-                                <span class="tag">小批量</span>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <span class="publish-time">发布时间：2023-06-28</span>
-                            <button class="btn-outline">查看详情</button>
-                            <button class="btn-primary">我要对接</button>
-                        </div>
-                    </div>
-                    
-                    <!-- 需求卡片3 -->
-                    <div class="demand-card">
-                        <div class="card-header">
-                            <span class="card-type design">设计服务</span>
-                            <span class="card-urgency low">一般</span>
-                        </div>
-                        <div class="card-body">
-                            <h3>2024春夏童装设计服务需求</h3>
-                            <div class="card-info">
-                                <p><strong>需求企业：</strong>快乐童年服饰有限公司</p>
-                                <p><strong>需求描述：</strong>寻找专业童装设计师，为2024春夏季设计10款0-3岁婴幼儿服装，主题为"自然探索"，设计风格简约自然。</p>
-                                <p><strong>截止日期：</strong>2023-09-30</p>
-                            </div>
-                            <div class="card-tags">
-                                <span class="tag">婴幼儿</span>
-                                <span class="tag">春夏</span>
-                                <span class="tag">设计服务</span>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <span class="publish-time">发布时间：2023-07-01</span>
-                            <button class="btn-outline">查看详情</button>
-                            <button class="btn-primary">我要对接</button>
-                        </div>
-                    </div>
+                    <div class="empty-state">正在加载数据...</div>
                 </div>
                 
                 <!-- 分页 -->
                 <div class="pagination">
-                    <a href="#" class="prev disabled"><i class="bi bi-chevron-left"></i></a>
-                    <a href="#" class="active">1</a>
-                    <a href="#">2</a>
-                    <a href="#">3</a>
-                    <span>...</span>
-                    <a href="#">8</a>
-                    <a href="#" class="next"><i class="bi bi-chevron-right"></i></a>
+                    <div class="pagination-controls">
+                        <button class="btn-page btn-prev" disabled>
+                            <i class="bi bi-chevron-left"></i> 上一页
+                        </button>
+                        <div class="page-numbers">
+                            <button class="btn-page active">1</button>
+                        </div>
+                        <button class="btn-page btn-next" disabled>
+                            下一页 <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="page-info">第 1 页，共 1 页 (总计 0 条记录)</div>
                 </div>
             </div>
         </section>
@@ -1114,15 +1104,7 @@
                                     <option value="supplier3">浙江童装辅料供应商</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label>仓库</label>
-                                <select id="warehouse" required>
-                                    <option value="">请选择仓库</option>
-                                    <option value="warehouse1">主仓库</option>
-                                    <option value="warehouse2">原料仓库</option>
-                                    <option value="warehouse3">成品仓库</option>
-                                </select>
-                            </div>
+
                         </div>
                         
                         <div class="form-section">
@@ -1219,10 +1201,28 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="pagination">
-                        <button class="btn-page" disabled>上一页</button>
-                        <span class="page-info">第 1 页，共 5 页</span>
-                        <button class="btn-page">下一页</button>
+                    <div class="pagination" id="inboundPagination">
+                        <div class="pagination-controls">
+                            <div class="page-size-selector">
+                                <label>每页显示：</label>
+                                <select onchange="PaginationManager.changePageSize('inbound', this.value)">
+                                    <option value="5">5条</option>
+                                    <option value="10" selected>10条</option>
+                                    <option value="20">20条</option>
+                                    <option value="50">50条</option>
+                                </select>
+                            </div>
+                            <div class="pagination-nav">
+                                <button class="btn-page btn-prev" onclick="PaginationManager.previousPage('inbound')">
+                                    <i class="bi bi-chevron-left"></i> 上一页
+                                </button>
+                                <div class="page-numbers"></div>
+                                <button class="btn-page btn-next" onclick="PaginationManager.nextPage('inbound')">
+                                    下一页 <i class="bi bi-chevron-right"></i>
+                                </button>
+                            </div>
+                            <div class="page-info">第 1 页，共 1 页 (总计 0 条记录)</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1266,15 +1266,7 @@
                                     <option value="return">退货出库</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label>仓库</label>
-                                <select id="outWarehouse" required>
-                                    <option value="">请选择仓库</option>
-                                    <option value="warehouse1">主仓库</option>
-                                    <option value="warehouse2">原料仓库</option>
-                                    <option value="warehouse3">成品仓库</option>
-                                </select>
-                            </div>
+
                         </div>
                         <div class="form-row">
                             <div class="form-group">
@@ -1352,10 +1344,28 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="pagination">
-                        <button class="btn-page" disabled>上一页</button>
-                        <span class="page-info">第 1 页，共 3 页</span>
-                        <button class="btn-page">下一页</button>
+                    <div class="pagination" id="outboundPagination">
+                        <div class="pagination-controls">
+                            <div class="page-size-selector">
+                                <label>每页显示：</label>
+                                <select onchange="PaginationManager.changePageSize('outbound', this.value)">
+                                    <option value="5">5条</option>
+                                    <option value="10" selected>10条</option>
+                                    <option value="20">20条</option>
+                                    <option value="50">50条</option>
+                                </select>
+                            </div>
+                            <div class="pagination-nav">
+                                <button class="btn-page btn-prev" onclick="PaginationManager.previousPage('outbound')">
+                                    <i class="bi bi-chevron-left"></i> 上一页
+                                </button>
+                                <div class="page-numbers"></div>
+                                <button class="btn-page btn-next" onclick="PaginationManager.nextPage('outbound')">
+                                    下一页 <i class="bi bi-chevron-right"></i>
+                                </button>
+                            </div>
+                            <div class="page-info">第 1 页，共 1 页 (总计 0 条记录)</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1500,10 +1510,28 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="pagination">
-                        <button class="btn-page" disabled>上一页</button>
-                        <span class="page-info">第 1 页，共 2 页</span>
-                        <button class="btn-page">下一页</button>
+                    <div class="pagination" id="transferPagination">
+                        <div class="pagination-controls">
+                            <div class="page-size-selector">
+                                <label>每页显示：</label>
+                                <select onchange="PaginationManager.changePageSize('transfer', this.value)">
+                                    <option value="5">5条</option>
+                                    <option value="10" selected>10条</option>
+                                    <option value="20">20条</option>
+                                    <option value="50">50条</option>
+                                </select>
+                            </div>
+                            <div class="pagination-nav">
+                                <button class="btn-page btn-prev" onclick="PaginationManager.previousPage('transfer')">
+                                    <i class="bi bi-chevron-left"></i> 上一页
+                                </button>
+                                <div class="page-numbers"></div>
+                                <button class="btn-page btn-next" onclick="PaginationManager.nextPage('transfer')">
+                                    下一页 <i class="bi bi-chevron-right"></i>
+                                </button>
+                            </div>
+                            <div class="page-info">第 1 页，共 1 页 (总计 0 条记录)</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1788,8 +1816,8 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo">
-                    <img src="../images/logo-footer.png" alt="织里镇童装产业协同管理信息系统">
-                    <p>织里镇童装产业协同管理信息系统</p>
+                    <img src="../images/logo-footer.png" alt="织里镇童装产业协同管理平台">
+                    <p>织里镇童装产业协同管理平台</p>
                 </div>
                 <div class="footer-links">
                     <div class="link-group">
@@ -1833,12 +1861,13 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2023 织里镇童装产业协同管理信息系统 版权所有 浙ICP备XXXXXXXX号</p>
+                <p>© 2026 织里镇童装产业协同管理平台 版权所有 浙ICP备XXXXXXXX号</p>
             </div>
         </div>
     </footer>
 
-    <script src="../js/common.js"></script>
-    <script src="../js/supply-chain.js"></script>
+    <script src="../js/auth-header.js?v=20260510"></script>
+    <script src="../js/common.js?v=20260510"></script>
+    <script src="../js/supply-chain.js?v=20260511"></script>
 </body>
 </html> 

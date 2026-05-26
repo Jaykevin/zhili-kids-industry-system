@@ -1,4 +1,17 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // 认证类接口基址（/api/auth），供购物车、下单等使用；子函数内若未再声明 API_BASE 则继承此变量
+    var API_BASE = window.ZhiliApi.apiAuth();
+
+    // 根据用户类型显示/隐藏「我的店铺」按钮：仅企业用户可见，点击跳转我的店铺页面
+    var userInfoStr = localStorage.getItem('userInfo');
+    var userInfo = null;
+    try { if (userInfoStr) userInfo = JSON.parse(userInfoStr); } catch (e) {}
+    var isEnterprise = userInfo && userInfo.userType === 2;
+    var myShopEl = document.querySelector('.product-categories .my-shop-category');
+    if (myShopEl) {
+        myShopEl.style.display = isEnterprise ? '' : 'none';
+    }
+
     // 全局筛选状态对象
     window.filterState = {
         category: "全部产品",
@@ -16,31 +29,58 @@ document.addEventListener('DOMContentLoaded', function () {
     // 原始产品数据备份
     window.originalProductData = [];
 
-    // 初始化产品数据和分页
+    /** 将后端 ProductVO 转为前端卡片所需格式（供 initProductData 与 handleMyShopClick 共用） */
+    function mapProductFromApi(item) {
+        var badgeObj = null;
+        if (item.badge) {
+            var badgeTextMap = { 'new': '新品', 'hot': '热销', 'organic': '有机', 'discount': '特惠' };
+            badgeObj = { type: item.badge, text: badgeTextMap[item.badge] || item.badge };
+        }
+        var priceStr = function (n) {
+            if (n == null) return '¥0.00';
+            return '¥' + (typeof n === 'number' ? n.toFixed(2) : Number(n).toFixed(2));
+        };
+        var cat = item.category || '';
+        var catStr = cat ? ('全部产品,' + (cat.indexOf('全部产品') >= 0 ? cat : cat)) : '全部产品';
+        return {
+            id: item.id,
+            title: item.name,
+            description: item.description || '',
+            price: { current: priceStr(item.price), original: priceStr(item.originalPrice) },
+            sales: item.sales != null ? item.sales : 0,
+            company: item.enterpriseName || '',
+            image: item.imageUrl || '',
+            badge: badgeObj,
+            category: catStr,
+            ageRange: item.ageRange || '全部',
+            season: item.season || '全部',
+            material: item.material || '',
+            certification: item.certification || ''
+        };
+    }
+
+    // 从后端接口加载产品数据，完成后初始化分页等
     initProductData();
-    // 备份原始数据
-    window.originalProductData = [...window.productData];
-    initPagination();
-
-    // 初始化模态框
-    initProductModal();
-
-    // 初始化购物车图标
-    initCartIcon();
 
     // 产品分类切换
     const categories = document.querySelectorAll('.product-categories .category');
 
     categories.forEach(category => {
         category.addEventListener('click', function () {
+            // 获取分类名称
+            const categoryName = this.querySelector('span').textContent;
+
+            // 我的店铺：跳转到我的店铺页面（仅企业用户可见该按钮）
+            if (categoryName === '我的店铺') {
+                handleMyShopClick();
+                return;
+            }
+
             // 移除所有分类的active类
             categories.forEach(cat => cat.classList.remove('active'));
 
             // 添加当前点击分类的active类
             this.classList.add('active');
-
-            // 获取分类名称
-            const categoryName = this.querySelector('span').textContent;
 
             // 更新筛选状态
             window.filterState.category = categoryName;
@@ -49,6 +89,18 @@ document.addEventListener('DOMContentLoaded', function () {
             applyFilters();
         });
     });
+
+    // 处理我的店铺点击：跳转到我的店铺页面
+    function handleMyShopClick() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            showNotification('请先登录后查看我的店铺', 'warning');
+            var loginUrl = window.location.pathname.indexOf('pages') >= 0 ? 'login.html' : 'pages/login.html';
+            window.location.href = loginUrl + '?redirect=my-shop.html';
+            return;
+        }
+        window.location.href = 'my-shop.html';
+    }
 
     // 筛选选项点击
     const filterOptions = document.querySelectorAll('.filter-option');
@@ -141,6 +193,9 @@ document.addEventListener('DOMContentLoaded', function () {
     
     // 应用所有筛选条件并更新显示
     function applyFilters() {
+        if (!window.originalProductData || window.originalProductData.length === 0) {
+            return;
+        }
         showNotification('正在应用筛选条件...', 'info');
         
         // 重置产品数据为原始数据
@@ -162,12 +217,11 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
         
-        // 应用季节筛选
+        // 应用季节筛选（季节为「全部」的产品在任何季节下都显示）
         if (window.filterState.season !== "全部") {
             window.productData = window.productData.filter(product => {
                 if (!product.season) return false;
-                return product.season.includes(window.filterState.season) || 
-                       product.season === "全部";
+                return product.season.includes(window.filterState.season) || product.season === "全部";
             });
         }
         
@@ -213,17 +267,16 @@ document.addEventListener('DOMContentLoaded', function () {
         applySorting(window.filterState.sortMethod);
         
         // 更新页面显示
+        const productList = document.querySelector('.product-list');
+        const paginationEl = document.querySelector('.pagination');
         if (window.productData.length > 0) {
+            if (paginationEl) paginationEl.style.display = 'flex';
             showPage(1);
             showNotification(`找到${window.productData.length}个符合条件的产品`, 'success');
         } else {
-            // 无筛选结果时显示提示信息
-            const productList = document.querySelector('.product-list');
-            productList.innerHTML = '<div class="no-results">没有找到符合条件的产品，请尝试其他筛选条件</div>';
+            if (productList) productList.innerHTML = '<div class="no-results">没有找到符合条件的产品，请尝试其他筛选条件</div>';
             showNotification('没有找到符合条件的产品', 'warning');
-            
-            // 隐藏分页
-            document.querySelector('.pagination').style.display = 'none';
+            if (paginationEl) paginationEl.style.display = 'none';
         }
     }
     
@@ -264,6 +317,10 @@ document.addEventListener('DOMContentLoaded', function () {
     
     // 搜索产品
     function searchProducts(keyword) {
+        if (!window.originalProductData || window.originalProductData.length === 0) {
+            showNotification('产品数据加载中，请稍后再试', 'warning');
+            return;
+        }
         showNotification(`正在搜索"${keyword}"...`, 'info');
         
         // 重置产品数据为原始数据
@@ -279,17 +336,16 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         
         // 更新页面显示
+        const productList = document.querySelector('.product-list');
+        const paginationEl = document.querySelector('.pagination');
         if (window.productData.length > 0) {
+            if (paginationEl) paginationEl.style.display = 'flex';
             showPage(1);
             showNotification(`找到${window.productData.length}个与"${keyword}"相关的产品`, 'success');
         } else {
-            // 无搜索结果时显示提示信息
-            const productList = document.querySelector('.product-list');
-            productList.innerHTML = '<div class="no-results">没有找到与"' + keyword + '"相关的产品</div>';
+            if (productList) productList.innerHTML = '<div class="no-results">没有找到与"' + keyword + '"相关的产品</div>';
             showNotification(`未找到与"${keyword}"相关的产品`, 'warning');
-            
-            // 隐藏分页
-            document.querySelector('.pagination').style.display = 'none';
+            if (paginationEl) paginationEl.style.display = 'none';
         }
     }
     
@@ -325,6 +381,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (document.getElementById('product-sort')) {
             document.getElementById('product-sort').value = 'recommend';
         }
+        
+        // 清空搜索框
+        var searchInput = document.querySelector('.search-box input');
+        if (searchInput) searchInput.value = '';
         
         // 重置产品数据
         window.productData = [...window.originalProductData];
@@ -444,6 +504,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function createProductCard(product) {
         const card = document.createElement('div');
         card.className = 'product-card';
+        // 存储产品ID供加入购物车使用
+        if (product.id) card.dataset.productId = product.id;
 
         // 添加徽章
         if (product.badge) {
@@ -555,11 +617,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     e.stopPropagation(); // 阻止事件冒泡
 
                     // 获取产品信息
+                    const productId = card.dataset.productId;
                     const productTitle = card.querySelector('h3').textContent;
                     const productImage = card.querySelector('.product-image img').src;
 
-                    // 模拟添加购物车
-                    simulateAddToCart(productTitle, productImage);
+                    // 加入购物车（带产品ID）
+                    addToCart(productId, productTitle, productImage, null, null, 1);
                 });
             }
 
@@ -590,237 +653,42 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ===== 初始化产品数据 =====
+    // ===== 初始化产品数据（从后端接口加载，图片使用数据库中的 OSS URL） =====
     function initProductData() {
-        // 这里定义产品数据，实际应用中可以通过API获取
-        window.productData = [
-            {
-                title: "2023夏季男童短袖T恤",
-                description: "纯棉材质，透气舒适，适合3-6岁儿童",
-                price: { current: "¥99.00", original: "¥129.00" },
-                sales: 352,
-                company: "浙江童趣服饰有限公司",
-                image: "../images/products/boys/boys-tshirt-01.jpg",
-                badge: { type: "new", text: "新品" },
-                category: "全部产品,男童服装",
-                ageRange: "3-6岁",
-                season: "夏季",
-                material: "棉质"
-            },
-            {
-                title: "男童弹力牛仔裤",
-                description: "优质牛仔面料，柔软舒适，弹力设计，活动自如",
-                price: { current: "¥78.00", original: "¥98.00" },
-                sales: 475,
-                company: "织里优质童装有限公司",
-                image: "../images/products/boys/boys-pants-01.jpg",
-                badge: { type: "hot", text: "热销" },
-                category: "全部产品,男童服装",
-                ageRange: "6-9岁",
-                season: "春季,秋季",
-                material: "牛仔"
-            },
-            {
-                title: "婴幼儿有机棉连体衣",
-                description: "GOTS认证有机棉，无荧光剂，安全健康，适合0-1岁宝宝",
-                price: { current: "¥135.00", original: "¥168.00" },
-                sales: 286,
-                company: "快乐童年服饰有限公司",
-                image: "../images/products/babies/babies-romper-01.jpg",
-                badge: { type: "organic", text: "有机" },
-                category: "全部产品,婴幼儿服装",
-                ageRange: "0-1岁",
-                season: "全部",
-                material: "棉质",
-                certification: "GOTS有机"
-            },
-            {
-                title: "女童公主连衣裙",
-                description: "精致蕾丝花边，甜美可爱，适合3-8岁女童，多色可选",
-                price: { current: "¥128.00", original: "¥158.00" },
-                sales: 312,
-                company: "湖州小森林童装设计工作室",
-                image: "../images/products/girls/girls-dress-01.jpg",
-                badge: null,
-                category: "全部产品,女童服装",
-                ageRange: "3-6岁",
-                season: "春季,夏季",
-                material: "混纺"
-            },
-            {
-                title: "冬季儿童羽绒服",
-                description: "90%白鸭绒填充，保暖舒适，防风防水，适合3-10岁儿童",
-                price: { current: "¥289.00", original: "¥389.00" },
-                sales: 265,
-                company: "浙江童趣服饰有限公司",
-                image: "../images/products/seasonal/seasonal-down-01.jpg",
-                badge: { type: "discount", text: "特惠" },
-                category: "全部产品,男童服装,女童服装,季节性服装",
-                ageRange: "3-6岁,6-9岁",
-                season: "冬季",
-                material: "羊毛"
-            },
-            {
-                title: "男童休闲衬衫",
-                description: "100%纯棉面料，休闲百搭，适合4-10岁男童",
-                price: { current: "¥69.00", original: "¥89.00" },
-                sales: 198,
-                company: "织里优质童装有限公司",
-                image: "../images/products/boys/boys-shirt-01.jpg",
-                badge: null,
-                category: "全部产品,男童服装",
-                ageRange: "3-6岁,6-9岁",
-                season: "春季,秋季",
-                material: "棉质"
-            },
-            {
-                title: "小学生校服",
-                description: "耐磨面料，舒适透气，符合学校规范要求，多尺码可选",
-                price: { current: "¥169.00", original: "¥199.00" },
-                sales: 203,
-                company: "织里校服定制中心",
-                image: "../images/products/uniforms/uniforms-primary-01.jpg",
-                badge: null,
-                category: "全部产品,校园制服",
-                ageRange: "6-9岁,9-12岁",
-                season: "春季,秋季",
-                material: "混纺"
-            },
-            {
-                title: "儿童汉服套装",
-                description: "传统文化设计，精致绣花，适合节日及表演活动，多种款式",
-                price: { current: "¥189.00", original: "¥238.00" },
-                sales: 178,
-                company: "织里镇创意童装设计工作室",
-                image: "../images/products/special/special-hanfu-01.jpg",
-                badge: { type: "new", text: "新品" },
-                category: "全部产品,特色产品",
-                ageRange: "3-6岁,6-9岁,9-12岁",
-                season: "全部",
-                material: "棉麻"
-            },
-            {
-                title: "幼儿园校服",
-                description: "柔软舒适，活泼可爱，易于穿脱，适合2-6岁儿童",
-                price: { current: "¥158.00", original: "¥188.00" },
-                sales: 203,
-                company: "织里校服定制中心",
-                image: "../images/products/uniforms/uniforms-kindergarten-01.jpg",
-                badge: null,
-                category: "全部产品,校园制服",
-                ageRange: "1-3岁,3-6岁",
-                season: "春季,秋季",
-                material: "棉质"
-            },
-            {
-                title: "婴儿连体爬服",
-                description: "柔软针织面料，宽松设计，不勒不紧，适合0-2岁宝宝",
-                price: { current: "¥89.00", original: "¥109.00" },
-                sales: 325,
-                company: "快乐童年服饰有限公司",
-                image: "../images/products/babies/babies-romper-02.jpg",
-                badge: { type: "hot", text: "热销" },
-                category: "全部产品,婴幼儿服装",
-                ageRange: "0-1岁,1-3岁",
-                season: "春季,秋季",
-                material: "针织",
-                certification: "Oeko-Tex"
-            },
-            {
-                title: "女童蓬蓬裙",
-                description: "立体设计，轻盈飘逸，适合3-8岁小女孩参加派对活动",
-                price: { current: "¥128.00", original: "¥168.00" },
-                sales: 156,
-                company: "湖州小森林童装设计工作室",
-                image: "../images/products/girls/girls-skirt-01.jpg",
-                badge: null,
-                category: "全部产品,女童服装",
-                ageRange: "3-6岁,6-9岁",
-                season: "春季,夏季",
-                material: "混纺"
-            },
-            {
-                title: "儿童防晒衣",
-                description: "UPF50+防晒面料，轻薄透气，适合夏季户外活动",
-                price: { current: "¥79.00", original: "¥99.00" },
-                sales: 289,
-                company: "动感童年运动服饰有限公司",
-                image: "../images/products/seasonal/seasonal-sun-01.jpg",
-                badge: { type: "discount", text: "特惠" },
-                category: "全部产品,男童服装,女童服装,季节性服装",
-                ageRange: "3-6岁,6-9岁,9-12岁",
-                season: "夏季",
-                material: "涤纶"
-            },
-            {
-                title: "儿童毛衣",
-                description: "柔软亲肤羊毛混纺，保暖不扎身，适合3-10岁儿童",
-                price: { current: "¥119.00", original: "¥149.00" },
-                sales: 178,
-                company: "织里优质童装有限公司",
-                image: "../images/products/seasonal/seasonal-sweater-01.jpg",
-                badge: null,
-                category: "全部产品,男童服装,女童服装,季节性服装",
-                ageRange: "3-6岁,6-9岁",
-                season: "秋季,冬季",
-                material: "羊毛"
-            },
-            {
-                title: "儿童睡衣套装",
-                description: "纯棉面料，柔软舒适，可爱卡通图案，适合2-12岁儿童",
-                price: { current: "¥89.00", original: "¥119.00" },
-                sales: 253,
-                company: "浙江童趣服饰有限公司",
-                image: "../images/products/special/special-pajamas-01.jpg",
-                badge: null,
-                category: "全部产品,特色产品",
-                ageRange: "1-3岁,3-6岁,6-9岁,9-12岁",
-                season: "全部",
-                material: "棉质"
-            },
-            {
-                title: "女童牛仔背带裙",
-                description: "优质牛仔面料，经典设计，百搭易搭配，适合3-10岁女童",
-                price: { current: "¥108.00", original: "¥138.00" },
-                sales: 178,
-                company: "织里优质童装有限公司",
-                image: "../images/products/girls/girls-pants-01.jpg",
-                badge: null,
-                category: "全部产品,女童服装",
-                ageRange: "3-6岁,6-9岁",
-                season: "春季,秋季",
-                material: "牛仔"
-            },
-            {
-                title: "婴儿保暖背心",
-                description: "天然彩棉填充，轻薄保暖，适合0-3岁宝宝四季穿着",
-                price: { current: "¥69.00", original: "¥89.00" },
-                sales: 213,
-                company: "快乐童年服饰有限公司",
-                image: "../images/products/babies/babies-vest-01.jpg",
-                badge: null,
-                category: "全部产品,婴幼儿服装",
-                ageRange: "0-1岁,1-3岁",
-                season: "秋季,冬季",
-                material: "棉质",
-                certification: "Oeko-Tex"
-            },
-            {
-                title: "男童马甲背心",
-                description: "轻便保暖，内外可穿，多色可选，适合3-12岁儿童",
-                price: { current: "¥79.00", original: "¥99.00" },
-                sales: 167,
-                company: "浙江童趣服饰有限公司",
-                image: "../images/products/boys/boys-vest-01.jpg",
-                badge: null,
-                category: "全部产品,男童服装,季节性服装",
-                ageRange: "3-6岁,6-9岁,9-12岁",
-                season: "春季,秋季",
-                material: "混纺"
-            }
-        ];
+        var productListEl = document.querySelector('.product-list');
+        if (productListEl) {
+            productListEl.innerHTML = '<div class="no-results" style="padding:40px;text-align:center;color:#999;">加载产品中...</div>';
+        }
 
-        console.log(`产品数据初始化完成，共${productData.length}个产品`);
+        var API_BASE = window.ZhiliApi.apiRoot();
+
+        fetch(API_BASE + '/products')
+            .then(function (res) { return res.json(); })
+            .then(function (result) {
+                if (result && result.code === 200 && Array.isArray(result.data)) {
+                    window.productData = result.data.map(mapProductFromApi);
+                    window.originalProductData = [...window.productData];
+                    console.log('产品数据从接口加载完成，共' + window.productData.length + '个产品');
+                } else {
+                    window.productData = [];
+                    window.originalProductData = [];
+                    console.warn('接口未返回产品数据，使用空列表');
+                }
+                afterProductDataReady();
+            })
+            .catch(function (err) {
+                console.warn('加载产品接口失败，使用空列表', err);
+                window.productData = [];
+                window.originalProductData = [];
+                afterProductDataReady();
+            });
+
+        /** 产品数据就绪后：初始化分页、模态框、购物车 */
+        function afterProductDataReady() {
+            initPagination();
+            initProductModal();
+            initCartIcon();
+        }
     }
 
     // 初始化产品预览模态框
@@ -832,14 +700,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const closeModal = modal.querySelector('.close-modal');
             if (closeModal) {
                 closeModal.addEventListener('click', function () {
-                    modal.style.display = 'none';
+                    modal.classList.remove('show');
                 });
             }
 
-            // 点击模态框外部关闭模态框
-            window.addEventListener('click', function (event) {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
+            // ESC键关闭模态框
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.classList.contains('show')) {
+                    modal.classList.remove('show');
                 }
             });
 
@@ -859,40 +727,45 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             // 数量增减
-            const quantityDecrease = modal.querySelector('.quantity-decrease');
-            const quantityIncrease = modal.querySelector('.quantity-increase');
-            const quantityInput = modal.querySelector('.quantity-control input');
+            const quantityDecrease = modal.querySelector('#qtyDecrease');
+            const quantityIncrease = modal.querySelector('#qtyIncrease');
+            const quantityInput = modal.querySelector('#qtyInput');
 
-            quantityDecrease.addEventListener('click', function () {
-                let currentValue = parseInt(quantityInput.value);
-                if (currentValue > 1) {
-                    quantityInput.value = currentValue - 1;
-                }
-            });
+            if (quantityDecrease) {
+                quantityDecrease.addEventListener('click', function () {
+                    let currentValue = parseInt(quantityInput.value);
+                    if (currentValue > 1) {
+                        quantityInput.value = currentValue - 1;
+                    }
+                });
+            }
 
-            quantityIncrease.addEventListener('click', function () {
-                let currentValue = parseInt(quantityInput.value);
-                const maxValue = parseInt(quantityInput.getAttribute('max') || '99');
-                if (currentValue < maxValue) {
-                    quantityInput.value = currentValue + 1;
-                } else {
-                    showNotification('已达到最大购买数量', 'warning');
-                }
-            });
+            if (quantityIncrease) {
+                quantityIncrease.addEventListener('click', function () {
+                    let currentValue = parseInt(quantityInput.value);
+                    const maxValue = parseInt(quantityInput.getAttribute('max') || '99');
+                    if (currentValue < maxValue) {
+                        quantityInput.value = currentValue + 1;
+                    } else {
+                        showNotification('已达到最大购买数量', 'warning');
+                    }
+                });
+            }
 
             // 加入购物车按钮
-            const addToCartBtn = modal.querySelector('.btn-primary');
+            const addToCartBtn = modal.querySelector('#btnAddToCart');
             if (addToCartBtn) {
                 addToCartBtn.addEventListener('click', function () {
                     // 获取商品信息
-                    const productTitle = modal.querySelector('.preview-details h2').textContent;
-                    const selectedColor = modal.querySelector('.select-item:nth-child(1) .option.active').textContent;
-                    const selectedSize = modal.querySelector('.select-item:nth-child(2) .option.active').textContent;
-                    const quantity = quantityInput.value;
-                    const productImage = modal.querySelector('.gallery-main img').src;
+                    const productId = modal.dataset.productId;
+                    const productTitle = modal.querySelector('#previewTitle')?.textContent || '';
+                    const selectedColor = modal.querySelector('#colorOptions .option.active')?.textContent || '';
+                    const selectedSize = modal.querySelector('#sizeOptions .option.active')?.textContent || '';
+                    const quantity = parseInt(document.getElementById('qtyInput')?.value) || 1;
+                    const productImage = modal.querySelector('#previewMainImage')?.src || '';
 
-                    // 模拟添加购物车
-                    simulateAddToCartWithDetails(productTitle, selectedColor, selectedSize, quantity, productImage);
+                    // 调用加入购物车
+                    addToCart(productId, productTitle, productImage, selectedColor, selectedSize, quantity);
 
                     // 显示添加成功动画
                     addToCartAnimation(this);
@@ -900,17 +773,16 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             // 立即购买按钮
-            const buyNowBtn = modal.querySelector('.btn-outline');
+            const buyNowBtn = modal.querySelector('#btnBuyNow');
             if (buyNowBtn) {
                 buyNowBtn.addEventListener('click', function () {
-                    // 获取商品信息
-                    const productTitle = modal.querySelector('.preview-details h2').textContent;
-                    const selectedColor = modal.querySelector('.select-item:nth-child(1) .option.active').textContent;
-                    const selectedSize = modal.querySelector('.select-item:nth-child(2) .option.active').textContent;
-                    const quantity = quantityInput.value;
-                    const productImage = modal.querySelector('.gallery-main img').src;
+                    const productTitle = modal.querySelector('#previewTitle')?.textContent || '';
+                    const selectedColor = modal.querySelector('#colorOptions .option.active')?.textContent || '';
+                    const selectedSize = modal.querySelector('#sizeOptions .option.active')?.textContent || '';
+                    const quantity = document.getElementById('qtyInput')?.value || '1';
+                    const productImage = modal.querySelector('#previewMainImage')?.src || '';
 
-                    // 模拟立即购买
+                    // 立即购买
                     simulateBuyNow(productTitle, selectedColor, selectedSize, quantity, productImage);
                 });
             }
@@ -945,28 +817,52 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 打开产品预览模态框
     function openProductPreview(productCard) {
-        // 获取产品信息
+        const productId = productCard.dataset.productId;
         const productTitle = productCard.querySelector('h3').textContent;
         const productImage = productCard.querySelector('.product-image img').src.replace('300x400', '600x800');
         const productPrice = productCard.querySelector('.price-current').textContent;
         const productOriginalPrice = productCard.querySelector('.price-original').textContent;
 
-        // 更新模态框内容
         const modal = document.getElementById('productPreviewModal');
 
         if (modal) {
-            // 更新产品标题
-            modal.querySelector('.preview-details h2').textContent = productTitle;
+            modal.dataset.productId = productId || '';
+            modal.querySelector('#previewTitle').textContent = productTitle;
+            modal.querySelector('#previewMainImage').src = productImage;
+            modal.querySelector('#previewPrice').textContent = productPrice;
+            modal.querySelector('#previewOriginalPrice').textContent = productOriginalPrice;
 
-            // 更新产品图片
-            modal.querySelector('.gallery-main img').src = productImage;
+            // 计算折扣
+            const currentPrice = parseFloat(productPrice.replace('¥', ''));
+            const originalPrice = parseFloat(productOriginalPrice.replace('¥', ''));
+            if (!isNaN(currentPrice) && !isNaN(originalPrice) && originalPrice > 0) {
+                const discount = Math.round((currentPrice / originalPrice) * 10);
+                modal.querySelector('#previewDiscount').textContent = discount + '折';
+            }
 
-            // 更新产品价格
-            modal.querySelector('.preview-price .price-current').textContent = productPrice;
-            modal.querySelector('.preview-price .price-original').textContent = productOriginalPrice;
+            // 从后端获取产品详情（含库存）
+            const API_ROOT = window.ZhiliApi.apiRoot();
+            fetch(API_ROOT + '/products/' + productId)
+                .then(function(res) { return res.json(); })
+                .then(function(result) {
+                    if (result.code === 200 && result.data) {
+                        const p = result.data;
+                        document.getElementById('previewProductId').textContent = p.id || '';
+                        document.getElementById('previewAge').textContent = p.ageRange || '';
+                        document.getElementById('previewMaterial').textContent = p.material || '';
+                        document.getElementById('previewSeason').textContent = p.season || '';
+                        document.getElementById('previewCert').textContent = p.certification || '';
+                        document.getElementById('previewStock').textContent = '库存 ' + (p.stock != null ? p.stock : 0) + ' 件';
+                        if (p.enterpriseName) {
+                            document.getElementById('companyName').textContent = p.enterpriseName;
+                        }
+                    }
+                })
+                .catch(function(err) {
+                    console.warn('获取产品详情失败', err);
+                });
 
-            // 显示模态框
-            modal.style.display = 'block';
+            modal.classList.add('show');
         }
     }
 
@@ -1087,66 +983,97 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 800);
     }
 
-    // 模拟添加购物车
-    function simulateAddToCart(productTitle, productImage) {
-        console.log(`添加到购物车: ${productTitle}`);
-
-        // 构建购物车商品对象
-        const cartItem = {
-            id: Date.now().toString() + Math.floor(Math.random() * 1000),
-            name: productTitle,
-            image: productImage || "../images/products/boys/boys-tshirt-01.jpg",
-            color: "默认",
-            size: "默认",
-            price: 99.00,
-            quantity: 1
-        };
-
-        // 添加到购物车
-        window.cartItems.push(cartItem);
-
-        // 更新购物车图标
-        updateCartIcon(1);
-
-        // 显示添加成功通知
-        showNotification(`已将 ${productTitle} 添加到购物车`, 'success');
-    }
-
-    // 模拟带详情添加购物车
-    function simulateAddToCartWithDetails(productTitle, color, size, quantity, productImage) {
-        console.log(`添加到购物车: ${productTitle}, 颜色: ${color}, 尺码: ${size}, 数量: ${quantity}`);
-
-        // 获取当前产品价格
-        let price = 99.00; // 默认价格
-        try {
-            const priceElement = document.querySelector('#productPreviewModal .preview-price .price-current');
-            if (priceElement) {
-                price = parseFloat(priceElement.textContent.replace('¥', ''));
-            }
-        } catch (e) {
-            console.error("获取价格失败，使用默认价格", e);
+    // 加入购物车（调用后端接口）
+    function addToCart(productId, productTitle, productImage, color, size, quantity) {
+        // 检查登录状态
+        var token = localStorage.getItem('token');
+        if (!token) {
+            showNotification('请先登录后加入购物车', 'warning');
+            // 跳转登录页
+            var loginUrl = window.location.pathname.indexOf('pages') >= 0 ? 'login.html' : 'pages/login.html';
+            window.location.href = loginUrl;
+            return;
         }
 
-        // 构建购物车商品对象
-        const cartItem = {
-            id: Date.now().toString() + Math.floor(Math.random() * 1000),
-            name: productTitle,
-            image: productImage || "../images/products/boys/boys-tshirt-01.jpg",
-            color: color || "默认",
-            size: size || "默认",
-            price: price,
-            quantity: parseInt(quantity) || 1
-        };
+        if (!productId) {
+            showNotification('产品信息不完整', 'error');
+            return;
+        }
 
-        // 添加到购物车
-        window.cartItems.push(cartItem);
+        // 调用后端加入购物车接口
+        var API_BASE = window.ZhiliApi.apiAuth();
 
-        // 更新购物车图标
-        updateCartIcon(parseInt(quantity) || 1);
-
-        // 显示添加成功通知
-        showNotification(`已将 ${quantity}件 ${color} ${size} ${productTitle} 添加到购物车`, 'success');
+        var btnText = color ? (' ' + (quantity || 1) + '件 ' + (color || '') + ' ' + (size || '') + ' ') : '';
+        
+        fetch(API_BASE + '/cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({
+                productId: productId,
+                selectedColor: color || null,
+                selectedSize: size || null,
+                quantity: quantity || 1
+            })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.code === 200) {
+                // 成功后从接口获取最新购物车数量
+                fetchCartCount();
+                // 同时更新本地购物车数据（含 productId，供结算时使用）
+                window.cartItems.push({
+                    id: Date.now().toString(),
+                    productId: productId,
+                    name: productTitle,
+                    image: productImage,
+                    color: color || '默认',
+                    size: size || '默认',
+                    price: 0,
+                    quantity: quantity || 1
+                });
+                showNotification('已加入购物车' + btnText, 'success');
+                // 同步刷新全局导航栏购物车角标
+                if (window.refreshCartBadge) { window.refreshCartBadge(); }
+            } else {
+                showNotification(data.message || '加入购物车失败', 'error');
+            }
+        })
+        .catch(function(err) {
+            console.error('加入购物车失败:', err);
+            showNotification('网络错误，请稍后重试', 'error');
+        });
     }
+
+    // 获取购物车数量并更新角标
+    function fetchCartCount() {
+        var token = localStorage.getItem('token');
+        if (!token) return;
+
+        var API_BASE = window.ZhiliApi.apiAuth();
+
+        fetch(API_BASE + '/cart/count', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.code === 200 && data.data != null) {
+                updateCartIcon(data.data, true); // true = 设为绝对值，不从当前数量累加
+            }
+        })
+        .catch(function() {});
+    }
+
+    // 页面加载时获取购物车数量
+    (function initCartCountOnLoad() {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', fetchCartCount);
+        } else {
+            fetchCartCount();
+        }
+    })();
 
     // 模拟立即购买
     function simulateBuyNow(productTitle, color, size, quantity, imageUrl) {
@@ -1160,52 +1087,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 1000);
     }
 
-    // 更新购物车图标
+    // 更新购物车图标（仅更新数量，不创建新图标；图标由 initCartIcon 统一创建）
     function updateCartIcon(count) {
-        // 获取导航中的购物车图标
-        let cartIcon = document.querySelector('.user-info .cart-icon');
+        var cartIcon = document.querySelector('.user-info .cart-icon');
+        if (!cartIcon) return; // 图标不存在时跳过，避免重复创建
 
-        // 如果不存在，创建一个
-        if (!cartIcon) {
-            const userInfo = document.querySelector('.user-info');
+        var countElement = cartIcon.querySelector('.cart-count');
+        if (!countElement) return;
+        var setAbsolute = arguments[1] === true;
+        var currentCount = parseInt(countElement.textContent, 10) || 0;
+        countElement.textContent = setAbsolute ? Math.max(0, count) : (currentCount + count);
 
-            // 创建购物车图标
-            cartIcon = document.createElement('div');
-            cartIcon.className = 'cart-icon';
-
-            // 创建图标元素
-            const iconElement = document.createElement('i');
-            iconElement.className = 'bi bi-cart';
-            cartIcon.appendChild(iconElement);
-
-            // 创建数量元素
-            const countElement = document.createElement('span');
-            countElement.className = 'cart-count';
-            countElement.textContent = '0';
-            cartIcon.appendChild(countElement);
-
-            // 添加到用户信息区
-            userInfo.prepend(cartIcon);
-
-            // 添加点击事件
-            cartIcon.addEventListener('click', function () {
-                showShoppingCart();
-            });
-        }
-
-        // 获取当前数量
-        const countElement = cartIcon.querySelector('.cart-count');
-        let currentCount = parseInt(countElement.textContent);
-
-        // 更新数量
-        currentCount += count;
-        countElement.textContent = currentCount;
-
-        // 添加动画效果
         cartIcon.classList.add('shake');
-        setTimeout(() => {
-            cartIcon.classList.remove('shake');
-        }, 500);
+        setTimeout(function() { cartIcon.classList.remove('shake'); }, 500);
     }
 
     // 添加到购物车的动画效果
@@ -1301,9 +1195,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="checkout-address">
                         <h3>收货地址</h3>
                         <div class="address-item">
-                            <p><span>收货人：</span>张三</p>
-                            <p><span>手机号：</span>1391234****</p>
-                            <p><span>收货地址：</span>浙江省湖州市织里镇XX路XX号</p>
+                            <p><span>收货人：</span><input type="text" class="receiver-name" placeholder="请输入收货人姓名" value="张三"></p>
+                            <p><span>手机号：</span><input type="tel" class="receiver-phone" placeholder="请输入手机号" value="13912345678"></p>
+                            <p><span>收货地址：</span><input type="text" class="receiver-address" placeholder="请输入收货地址" value="浙江省湖州市织里镇"></p>
                         </div>
                     </div>
                     <div class="checkout-payment">
@@ -1414,12 +1308,28 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             
             .checkout-address .address-item p {
-                margin: 5px 0;
+                margin: 8px 0;
                 font-size: 14px;
             }
-            
+
             .checkout-address .address-item p span {
                 color: #666;
+                display: inline-block;
+                width: 70px;
+            }
+
+            .checkout-address .address-item input {
+                flex: 1;
+                padding: 8px 12px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 14px;
+                width: 200px;
+            }
+
+            .checkout-address .address-item input:focus {
+                outline: none;
+                border-color: #4a6bdf;
             }
             
             .payment-options {
@@ -1571,15 +1481,389 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // 添加确认订单事件
         const confirmBtn = checkoutModal.querySelector('.confirm-order');
-        confirmBtn.addEventListener('click', function () {
-            // 显示支付成功提示
-            document.body.removeChild(checkoutModal);
-            showNotification('支付成功！商品将尽快发货', 'success');
+        confirmBtn.addEventListener('click', async function () {
+            // 获取收货信息
+            const receiverName = checkoutModal.querySelector('.receiver-name')?.value || checkoutModal.querySelector('.address-item p:nth-child(1) span:last-child')?.textContent || '张三';
+            const receiverPhone = checkoutModal.querySelector('.receiver-phone')?.value || '13912345678';
+            const receiverAddress = checkoutModal.querySelector('.receiver-address')?.value || checkoutModal.querySelector('.address-item p:nth-child(3) span:last-child')?.textContent || '浙江省湖州市织里镇';
 
-            // 关闭产品预览模态框
-            const productModal = document.getElementById('productPreviewModal');
-            if (productModal) {
-                productModal.style.display = 'none';
+            if (!receiverName || !receiverPhone || !receiverAddress) {
+                showNotification('请填写完整的收货信息', 'error');
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showNotification('请先登录', 'error');
+                window.location.href = 'login.html?redirect=product.html';
+                return;
+            }
+
+            // 构建订单数据
+            const orderData = {
+                receiverName: receiverName,
+                receiverPhone: receiverPhone,
+                receiverAddress: receiverAddress,
+                items: [{
+                    productId: window.currentCheckoutProductId || window.currentProductId,
+                    selectedColor: color,
+                    selectedSize: size,
+                    quantity: parseInt(quantity) || 1
+                }]
+            };
+
+            try {
+                confirmBtn.textContent = '处理中...';
+                confirmBtn.disabled = true;
+
+                const response = await fetch(API_BASE + '/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                const result = await response.json();
+
+                if (result.code === 200) {
+                    document.body.removeChild(checkoutModal);
+                    showNotification('订单创建成功！正在跳转到订单页面...', 'success');
+
+                    // 刷新购物车数量
+                    updateCartCount();
+
+                    // 跳转到订单页面
+                    setTimeout(() => {
+                        window.location.href = 'orders.html';
+                    }, 1500);
+                } else {
+                    showNotification(result.message || '创建订单失败', 'error');
+                    confirmBtn.textContent = '确认支付';
+                    confirmBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('创建订单失败:', error);
+                showNotification('创建订单失败，请稍后重试', 'error');
+                confirmBtn.textContent = '确认支付';
+                confirmBtn.disabled = false;
+            }
+        });
+    }
+
+    // 购物车结算 - 显示确认订单页面
+    function showCheckoutModalForCart(productImage, totalAmount, discountAmount, payableAmount) {
+        // 创建模态框
+        const checkoutModal = document.createElement('div');
+        checkoutModal.className = 'checkout-modal';
+
+        // 生成购物车商品列表HTML
+        let cartItemsHTML = '';
+        window.cartItems.forEach((item, index) => {
+            const itemSubtotal = item.price * item.quantity;
+            cartItemsHTML += `
+                <div class="product-item">
+                    <div class="item-image">
+                        <img src="${item.image || 'https://via.placeholder.com/80x80'}" alt="${item.name}">
+                    </div>
+                    <div class="item-info">
+                        <h4>${item.name}</h4>
+                        <p>颜色：${item.color || '默认'} | 尺码：${item.size || '默认'}</p>
+                        <p>数量：${item.quantity}件 × ¥${item.price.toFixed(2)} = ¥${itemSubtotal.toFixed(2)}</p>
+                    </div>
+                </div>
+            `;
+        });
+
+        checkoutModal.innerHTML = `
+            <div class="checkout-content">
+                <span class="close-modal"><i class="bi bi-x-lg"></i></span>
+                <h2>确认订单</h2>
+                <div class="checkout-info">
+                    <div class="checkout-product">
+                        <h3>商品信息 (${window.cartItems.length}件商品)</h3>
+                        <div class="cart-items-list">
+                            ${cartItemsHTML}
+                        </div>
+                    </div>
+                    <div class="checkout-address">
+                        <h3>收货地址</h3>
+                        <div class="address-item">
+                            <p><span>收货人：</span><input type="text" class="receiver-name" placeholder="请输入收货人姓名" value="张三"></p>
+                            <p><span>手机号：</span><input type="tel" class="receiver-phone" placeholder="请输入手机号" value="13912345678"></p>
+                            <p><span>收货地址：</span><input type="text" class="receiver-address" placeholder="请输入收货地址" value="浙江省湖州市织里镇"></p>
+                        </div>
+                    </div>
+                    <div class="checkout-payment">
+                        <h3>支付方式</h3>
+                        <div class="payment-options">
+                            <label class="payment-option active">
+                                <input type="radio" name="payment" value="weixin" checked>
+                                <span>微信支付</span>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="payment" value="alipay">
+                                <span>支付宝</span>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="payment" value="bank">
+                                <span>银行卡</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="checkout-summary">
+                        <div class="summary-item">
+                            <span>商品金额：</span>
+                            <span>¥${totalAmount.toFixed(2)}</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>优惠金额：</span>
+                            <span>-¥${discountAmount.toFixed(2)}</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>运费：</span>
+                            <span>¥0.00</span>
+                        </div>
+                        <div class="summary-item total">
+                            <span>订单总计：</span>
+                            <span>¥${payableAmount.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    <div class="checkout-actions">
+                        <button class="btn-primary btn-lg confirm-order">确认支付</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // 添加样式（复用已有的样式）
+        const existingStyle = document.querySelector('.checkout-modal style');
+        if (!existingStyle) {
+            const style = document.createElement('style');
+            style.textContent = `
+                .checkout-modal {
+                    position: fixed;
+                    z-index: 1000;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .checkout-content {
+                    background-color: #fff;
+                    border-radius: 8px;
+                    width: 80%;
+                    max-width: 800px;
+                    padding: 20px;
+                    position: relative;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                }
+                .checkout-content h2 {
+                    text-align: center;
+                    margin-bottom: 20px;
+                }
+                .close-modal {
+                    position: absolute;
+                    top: 10px;
+                    right: 15px;
+                    font-size: 24px;
+                    cursor: pointer;
+                }
+                .checkout-product, .checkout-address, .checkout-payment, .checkout-summary {
+                    margin-bottom: 20px;
+                }
+                .checkout-product h3, .checkout-address h3, .checkout-payment h3 {
+                    font-size: 16px;
+                    margin-bottom: 10px;
+                    border-bottom: 1px solid #eee;
+                    padding-bottom: 5px;
+                }
+                .checkout-product .product-item {
+                    display: flex;
+                    gap: 15px;
+                    padding: 10px 0;
+                    border-bottom: 1px solid #f5f5f5;
+                }
+                .checkout-product .item-image img {
+                    width: 80px;
+                    height: 80px;
+                    object-fit: cover;
+                    border-radius: 4px;
+                }
+                .checkout-product .item-info h4 {
+                    font-size: 14px;
+                    margin: 0 0 5px 0;
+                }
+                .checkout-product .item-info p {
+                    font-size: 12px;
+                    color: #666;
+                    margin: 2px 0;
+                }
+                .checkout-address .address-item p {
+                    margin: 8px 0;
+                }
+                .checkout-address .address-item span {
+                    display: inline-block;
+                    width: 70px;
+                }
+                .checkout-address input {
+                    flex: 1;
+                    padding: 8px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                }
+                .payment-options {
+                    display: flex;
+                    gap: 15px;
+                    flex-wrap: wrap;
+                }
+                .payment-option {
+                    padding: 10px 20px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                }
+                .payment-option.active {
+                    border-color: #4CAF50;
+                    background-color: #f0f9f0;
+                }
+                .checkout-summary .summary-item {
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 8px 0;
+                }
+                .checkout-summary .total {
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: #f44336;
+                    border-top: 1px solid #ddd;
+                    padding-top: 10px;
+                    margin-top: 5px;
+                }
+                .checkout-actions {
+                    text-align: center;
+                    margin-top: 20px;
+                }
+                .confirm-order {
+                    width: 100%;
+                    padding: 12px;
+                    font-size: 16px;
+                }
+                .cart-items-list {
+                    max-height: 200px;
+                    overflow-y: auto;
+                }
+            `;
+            checkoutModal.appendChild(style);
+        }
+
+        // 添加到页面
+        document.body.appendChild(checkoutModal);
+
+        // 关闭按钮事件
+        const closeBtn = checkoutModal.querySelector('.close-modal');
+        closeBtn.addEventListener('click', function () {
+            document.body.removeChild(checkoutModal);
+        });
+
+        // 点击模态框外部关闭
+        checkoutModal.addEventListener('click', function (event) {
+            if (event.target === checkoutModal) {
+                document.body.removeChild(checkoutModal);
+            }
+        });
+
+        // 支付方式切换事件
+        const paymentOptions = checkoutModal.querySelectorAll('.payment-option');
+        paymentOptions.forEach(option => {
+            option.addEventListener('click', function () {
+                paymentOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                this.querySelector('input').checked = true;
+            });
+        });
+
+        // 确认支付按钮事件
+        const confirmBtn = checkoutModal.querySelector('.confirm-order');
+        confirmBtn.addEventListener('click', async function () {
+            // 获取收货信息
+            const receiverName = checkoutModal.querySelector('.receiver-name')?.value || '张三';
+            const receiverPhone = checkoutModal.querySelector('.receiver-phone')?.value || '13912345678';
+            const receiverAddress = checkoutModal.querySelector('.receiver-address')?.value || '浙江省湖州市织里镇';
+
+            if (!receiverName || !receiverPhone || !receiverAddress) {
+                showNotification('请填写完整的收货信息', 'error');
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showNotification('请先登录', 'error');
+                window.location.href = 'login.html?redirect=product.html';
+                return;
+            }
+
+            // 构建订单数据
+            const orderData = {
+                receiverName: receiverName,
+                receiverPhone: receiverPhone,
+                receiverAddress: receiverAddress,
+                items: window.cartItems.map(item => ({
+                    productId: item.productId || item.id,
+                    selectedColor: item.color === '默认' ? null : item.color,
+                    selectedSize: item.size === '默认' ? null : item.size,
+                    quantity: item.quantity
+                }))
+            };
+
+            try {
+                confirmBtn.textContent = '处理中...';
+                confirmBtn.disabled = true;
+
+                const response = await fetch(API_BASE + '/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                const result = await response.json();
+
+                if (result.code === 200) {
+                    document.body.removeChild(checkoutModal);
+                    showNotification('订单创建成功！正在跳转到订单页面...', 'success');
+
+                    // 清空本地购物车数据
+                    window.cartItems = [];
+
+                    // 刷新购物车数量
+                    updateCartCount();
+
+                    // 跳转到订单页面
+                    setTimeout(() => {
+                        window.location.href = 'orders.html';
+                    }, 1500);
+                } else {
+                    showNotification(result.message || '创建订单失败', 'error');
+                    confirmBtn.textContent = '确认支付';
+                    confirmBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('创建订单失败:', error);
+                showNotification('创建订单失败，请稍后重试', 'error');
+                confirmBtn.textContent = '确认支付';
+                confirmBtn.disabled = false;
             }
         });
     }
@@ -1640,11 +1924,52 @@ document.addEventListener('DOMContentLoaded', function () {
             showShoppingCart();
         });
 
+        // 创建后刷新购物车数量
+        fetchCartCount();
         console.log('购物车图标初始化完成');
     }
 
-    // 显示购物车内容
+    // 显示购物车内容（从后端拉取购物车列表，刷新后也能看到已加购商品）
     function showShoppingCart() {
+        var token = localStorage.getItem('token');
+        var API_BASE = window.ZhiliApi.apiAuth();
+
+        // 已登录则从后端获取购物车列表，再渲染弹窗
+        if (token) {
+            fetch(API_BASE + '/cart', { headers: { 'Authorization': 'Bearer ' + token } })
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data.code === 200 && Array.isArray(data.data)) {
+                        // 转为页面使用的格式：id, name, image, color, size, price, quantity
+                        window.cartItems = data.data.map(function(item) {
+                            return {
+                                id: String(item.id),
+                                productId: item.productId || item.id,
+                                name: item.productName || '',
+                                image: item.imageUrl || '',
+                                color: item.selectedColor || '默认',
+                                size: item.selectedSize || '默认',
+                                price: item.price != null ? Number(item.price) : 0,
+                                quantity: item.quantity != null ? item.quantity : 1
+                            };
+                        });
+                    } else {
+                        window.cartItems = window.cartItems || [];
+                    }
+                    renderCartModal();
+                })
+                .catch(function() {
+                    window.cartItems = window.cartItems || [];
+                    renderCartModal();
+                });
+        } else {
+            window.cartItems = window.cartItems || [];
+            renderCartModal();
+        }
+    }
+
+    // 根据 window.cartItems 渲染购物车弹窗
+    function renderCartModal() {
         // 创建购物车模态框
         const cartModal = document.createElement('div');
         cartModal.className = 'checkout-modal';
@@ -1729,40 +2054,49 @@ document.addEventListener('DOMContentLoaded', function () {
             // 添加数量增减和删除事件
             addCartItemEvents(cartModal);
 
-        // 继续购物按钮
-        const continueBtn = cartModal.querySelector('.continue-shopping');
-        if (continueBtn) {
-            continueBtn.addEventListener('click', function () {
-                document.body.removeChild(cartModal);
-            });
-        }
+            // 继续购物按钮
+            const continueBtn = cartModal.querySelector('.continue-shopping');
+            if (continueBtn) {
+                continueBtn.addEventListener('click', function () {
+                    document.body.removeChild(cartModal);
+                });
+            }
 
-        // 去结算按钮
-        const checkoutBtn = cartModal.querySelector('.checkout-btn');
-        if (checkoutBtn) {
-            checkoutBtn.addEventListener('click', function () {
-                document.body.removeChild(cartModal);
-                showNotification('正在跳转到结算页面...', 'info');
-                    
-                    // 计算总数量
-                    const totalQuantity = window.cartItems.reduce((sum, item) => sum + item.quantity, 0);
-                    
-                    // 使用第一件商品的图片
+            // 去结算按钮 - 弹出确认订单页面
+            const checkoutBtn = cartModal.querySelector('.checkout-btn');
+            if (checkoutBtn) {
+                checkoutBtn.addEventListener('click', function () {
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                        showNotification('请先登录', 'error');
+                        window.location.href = 'login.html?redirect=product.html';
+                        return;
+                    }
+
+                    // 关闭购物车模态框
+                    document.body.removeChild(cartModal);
+
+                    // 计算订单总金额
+                    const totalAmount = window.cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                    const discountAmount = totalAmount * 0.1;
+                    const payableAmount = totalAmount - discountAmount;
+
+                    // 获取第一个商品的信息作为展示
                     const firstItem = window.cartItems[0];
-                    
-                setTimeout(() => {
-                        showCheckoutModal('购物车商品', '', '', totalQuantity, firstItem.image);
-                }, 500);
-            });
-        }
+                    const productImage = firstItem.image || 'https://via.placeholder.com/100x100';
+
+                    // 显示确认订单模态框（复用现有的showCheckoutModal逻辑，但传入购物车商品信息）
+                    showCheckoutModalForCart(productImage, totalAmount, discountAmount, payableAmount);
+                });
+            }
         } else {
-        // 去逛逛按钮
-        const shopBtn = cartModal.querySelector('.empty-cart .btn-primary');
-        if (shopBtn) {
-            shopBtn.addEventListener('click', function () {
-                document.body.removeChild(cartModal);
-            });
-        }
+            // 购物车为空时显示去逛逛按钮
+            const shopBtn = cartModal.querySelector('.empty-cart .btn-primary');
+            if (shopBtn) {
+                shopBtn.addEventListener('click', function () {
+                    document.body.removeChild(cartModal);
+                });
+            }
         }
     }
 
@@ -1802,59 +2136,78 @@ document.addEventListener('DOMContentLoaded', function () {
         return itemsHTML;
     }
 
-    // 添加购物车操作事件
+    // 添加购物车操作事件（数量变更、删除会调用后端接口持久化）
     function addCartItemEvents(cartModal) {
-        // 获取所有商品项
+        var token = localStorage.getItem('token');
+        var API_BASE = window.ZhiliApi.apiAuth();
+
         const productItems = cartModal.querySelectorAll('.product-item');
-        
+
         productItems.forEach(item => {
             const itemId = item.getAttribute('data-id');
             const quantityInput = item.querySelector('input[type="number"]');
             const decreaseBtn = item.querySelector('.quantity-decrease');
             const increaseBtn = item.querySelector('.quantity-increase');
             const deleteBtn = item.querySelector('.delete-item');
-            
-            // 减少数量
+
+            function callUpdateQuantity(newQty) {
+                if (!token) return;
+                fetch(API_BASE + '/cart/' + itemId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({ quantity: newQty })
+                }).then(function(res) { return res.json(); }).then(function(data) {
+                    if (data.code === 200) fetchCartCount();
+                }).catch(function() {});
+            }
+
+            function callDelete() {
+                if (!token) return;
+                fetch(API_BASE + '/cart/' + itemId, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                }).then(function(res) { return res.json(); }).then(function(data) {
+                    if (data.code === 200) fetchCartCount();
+                }).catch(function() {});
+            }
+
             decreaseBtn.addEventListener('click', function() {
                 const cartItem = window.cartItems.find(c => c.id === itemId);
                 if (cartItem && cartItem.quantity > 1) {
-                    cartItem.quantity--;
-                    quantityInput.value = cartItem.quantity;
+                    var newQty = cartItem.quantity - 1;
+                    cartItem.quantity = newQty;
+                    quantityInput.value = newQty;
                     updateCartTotal(cartModal);
+                    callUpdateQuantity(newQty);
                 }
             });
-            
-            // 增加数量
+
             increaseBtn.addEventListener('click', function() {
                 const cartItem = window.cartItems.find(c => c.id === itemId);
                 if (cartItem && cartItem.quantity < 99) {
-                    cartItem.quantity++;
-                    quantityInput.value = cartItem.quantity;
+                    var newQty = cartItem.quantity + 1;
+                    cartItem.quantity = newQty;
+                    quantityInput.value = newQty;
                     updateCartTotal(cartModal);
+                    callUpdateQuantity(newQty);
                 }
             });
-            
-            // 删除商品
+
             deleteBtn.addEventListener('click', function() {
-                // 从数组中移除商品
                 const index = window.cartItems.findIndex(c => c.id === itemId);
                 if (index > -1) {
                     const removedItem = window.cartItems.splice(index, 1)[0];
-                    
-                    // 更新购物车图标数量
+                    callDelete();
+
                     const cartCount = document.querySelector('.cart-count');
                     if (cartCount) {
-                        const currentCount = parseInt(cartCount.textContent);
+                        var currentCount = parseInt(cartCount.textContent, 10);
                         cartCount.textContent = Math.max(0, currentCount - removedItem.quantity);
                     }
-                    
-                    // 从DOM中移除商品项
+
                     item.remove();
-                    
-                    // 更新总价
                     updateCartTotal(cartModal);
-                    
-                    // 如果购物车为空，重新加载购物车页面
+
                     if (window.cartItems.length === 0) {
                         document.body.removeChild(cartModal);
                         showShoppingCart();
@@ -1863,7 +2216,16 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
-    
+
+    // 更新购物车数量显示
+    function updateCartCount() {
+        const cartCount = document.querySelector('.cart-count');
+        if (cartCount) {
+            const totalCount = window.cartItems.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalCount;
+        }
+    }
+
     // 更新购物车总价
     function updateCartTotal(cartModal) {
         // 计算商品总额

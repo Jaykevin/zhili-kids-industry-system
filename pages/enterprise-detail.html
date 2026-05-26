@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>企业详情 - 织里镇童装产业协同管理信息系统</title>
+    <title>企业详情 - 织里镇童装产业协同管理平台</title>
     <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="../css/enterprise.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -171,8 +171,8 @@
     <header class="header">
         <div class="container">
             <div class="logo">
-                <img src="../images/logo.png" alt="织里镇童装产业协同管理信息系统">
-                <h1>织里镇童装产业协同管理信息系统</h1>
+                <img src="../images/logo.png" alt="织里镇童装产业协同管理平台">
+                <h1>织里镇童装产业协同管理平台</h1>
             </div>
             <nav class="main-nav">
                 <ul>
@@ -187,8 +187,10 @@
                 </ul>
             </nav>
             <div class="user-info">
-                <a href="login.html" class="btn btn-login">登录</a>
-                <a href="register.html" class="btn btn-register">注册</a>
+                <div class="user-info-guest">
+                    <a href="login.html" class="btn btn-login">登录</a>
+                    <a href="register.html" class="btn btn-register">注册</a>
+                </div>
             </div>
         </div>
     </header>
@@ -254,8 +256,8 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo">
-                    <img src="../images/logo-footer.png" alt="织里镇童装产业协同管理信息系统">
-                    <p>织里镇童装产业协同管理信息系统</p>
+                    <img src="../images/logo-footer.png" alt="织里镇童装产业协同管理平台">
+                    <p>织里镇童装产业协同管理平台</p>
                 </div>
                 <div class="footer-links">
                     <div class="link-group">
@@ -299,193 +301,141 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2023 织里镇童装产业协同管理信息系统 版权所有 浙ICP备XXXXXXXX号</p>
+                <p>© 2026 织里镇童装产业协同管理平台 版权所有 浙ICP备XXXXXXXX号</p>
             </div>
         </div>
     </footer>
 
+    <script src="../js/auth-header.js"></script>
     <script src="../js/common.js"></script>
     <script>
-        // 获取URL参数
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
             const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
             const results = regex.exec(location.search);
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
-        
-                 // 企业数据
-         const enterpriseData = {
-             "company1": {
-                 name: "浙江童趣服饰有限公司",
-                 logo: "../images/company/company-logo1.jpg",
-                 type: "生产企业",
-                 scale: "大型企业",
-                 cert: "ISO9001",
-                 address: "浙江省湖州市织里镇开发区创业大道88号",
-                 phone: "0572-12345678",
-                 email: "contact@tongqu.com",
-                 website: "www.tongqu.com",
-                 description: "浙江童趣服饰有限公司成立于2005年，是一家专注于3-12岁儿童服装的设计和生产企业。公司拥有现代化的生产基地，年产能超过200万件。产品以时尚、舒适、环保为设计理念，远销欧美和东南亚市场。公司注重产品质量和环保标准，通过了ISO9001质量管理体系认证。<br><br>公司拥有专业的设计团队，每年推出春夏、秋冬两季新品，款式新颖，深受消费者喜爱。同时，公司积极履行社会责任，参与公益活动，为儿童健康成长贡献力量。",
-                 certificates: ["ISO9001质量管理体系", "Oeko-Tex Standard 100", "浙江省著名商标"]
-             },
-             "company2": {
-                 name: "湖州小森林童装设计工作室",
-                 logo: "../images/company/company-logo2.jpg",
-                 type: "设计企业",
-                 scale: "中型企业",
-                 cert: "GOTS认证",
-                 address: "浙江省湖州市织里镇时尚产业园C区12号",
-                 phone: "0572-87654321",
-                 email: "design@xiaosenlin.com",
-                 website: "www.xiaosenlinkids.com",
-                 description: "湖州小森林童装设计工作室成立于2012年，是一家专注于环保、可持续童装设计的创意工作室。工作室由资深童装设计师创立，秉承"自然、环保、舒适"的设计理念，每年推出春夏、秋冬四个系列的童装设计。<br><br>工作室使用有机棉、天然亚麻等环保面料，所有产品通过GOTS有机纺织品认证，确保产品从原料到生产全过程符合有机标准和社会责任要求。设计风格以自然、简约为主，融入森林、动物等自然元素，深受家长和孩子喜爱。",
-                 certificates: ["GOTS有机纺织品认证", "浙江省绿色设计示范企业"]
-             },
-            // 其他企业数据保持不变
-             "company3": {
-                 name: "织里优质面料有限公司",
-                 logo: "../images/company/company-logo3.jpg",
-                 type: "原材料供应",
-                 scale: "大型企业",
-                 cert: "Oeko-Tex",
-                 address: "浙江省湖州市织里镇工业园区纺织路56号",
-                 phone: "0572-56781234",
-                 email: "info@zhilimaterial.com",
-                 website: "www.zhilimaterial.com",
-                 description: "织里优质面料有限公司成立于2000年，是织里镇最大的童装面料供应商之一。公司专注于各类高品质童装面料的研发与生产，包括棉、麻、丝、毛等天然材质，以及具有防水、抗菌、防紫外线等功能的特种面料。<br><br>公司拥有先进的生产设备和检测实验室，所有产品均通过Oeko-Tex Standard 100认证，确保面料不含有害物质，对人体健康无害，特别适用于婴幼儿服装。公司与多家知名童装品牌建立了长期合作关系，是童装产业链中重要的原材料供应商。",
-                 certificates: ["Oeko-Tex Standard 100", "ISO9001质量管理体系", "浙江省高新技术企业"]
-             },
-            // 其余企业数据省略...
-         };
-        
-        // 加载企业详情
-        function loadEnterpriseDetail() {
+
+        const fallbackEnterpriseData = {
+            "company1": {
+                name: "浙江童趣服饰有限公司",
+                logo: "../images/company/company-logo1.jpg",
+                type: "生产企业",
+                scale: "大型企业",
+                cert: "ISO9001",
+                address: "浙江省湖州市织里镇开发区创业大道88号",
+                phone: "0572-12345678",
+                email: "contact@tongqu.com",
+                website: "www.tongqu.com",
+                description: "浙江童趣服饰有限公司成立于2005年，是一家专注于3-12岁儿童服装的设计和生产企业。公司拥有现代化的生产基地，年产能超过200万件。产品以时尚、舒适、环保为设计理念，远销欧美和东南亚市场。公司注重产品质量和环保标准，通过了ISO9001质量管理体系认证。",
+                certificates: ["ISO9001质量管理体系", "Oeko-Tex Standard 100", "浙江省著名商标"]
+            },
+            "company2": {
+                name: "湖州小森林童装设计工作室",
+                logo: "../images/company/company-logo2.jpg",
+                type: "设计企业",
+                scale: "中型企业",
+                cert: "GOTS认证",
+                address: "浙江省湖州市织里镇时尚产业园C区12号",
+                phone: "0572-87654321",
+                email: "design@xiaosenlin.com",
+                website: "www.xiaosenlinkids.com",
+                description: "湖州小森林童装设计工作室成立于2012年，是一家专注于环保、可持续童装设计的创意工作室。工作室秉承自然、环保、舒适的设计理念，每年推出春夏、秋冬四个系列的童装设计。",
+                certificates: ["GOTS有机纺织品认证", "浙江省绿色设计示范企业"]
+            },
+            "company3": {
+                name: "织里优质面料有限公司",
+                logo: "../images/company/company-logo3.jpg",
+                type: "原材料供应",
+                scale: "大型企业",
+                cert: "Oeko-Tex",
+                address: "浙江省湖州市织里镇工业园区纺织路56号",
+                phone: "0572-56781234",
+                email: "info@zhilimaterial.com",
+                website: "www.zhilimaterial.com",
+                description: "织里优质面料有限公司成立于2000年，是织里镇最大的童装面料供应商之一。公司专注于各类高品质童装面料的研发与生产，所有产品均通过Oeko-Tex Standard 100认证。",
+                certificates: ["Oeko-Tex Standard 100", "ISO9001质量管理体系", "浙江省高新技术企业"]
+            }
+        };
+
+        async function loadEnterpriseDetail() {
             const id = getUrlParameter('id');
-            if (!id || !enterpriseData[id]) {
-                // 如果没有ID参数或ID不存在，显示默认信息或返回列表页
+            if (!id) {
                 alert('未找到企业信息');
                 window.location.href = 'enterprise.html';
                 return;
             }
-            
-            const enterprise = enterpriseData[id];
-            
-            // 更新页面标题
-            document.title = `${enterprise.name} - 企业详情`;
-            
-            // 更新面包屑导航
-            document.getElementById('enterprise-name-breadcrumb').textContent = enterprise.name;
-            
-            // 更新企业基本信息
-            document.getElementById('detail-logo').src = enterprise.logo;
-            document.getElementById('detail-logo').alt = enterprise.name;
-            document.getElementById('detail-name').textContent = enterprise.name;
-            
-            // 更新企业标签
-            const tagsHtml = `
-                <span class="tag type">${enterprise.type}</span>
-                <span class="tag scale">${enterprise.scale}</span>
-                <span class="tag cert">${enterprise.cert}</span>
-            `;
-            document.getElementById('detail-tags').innerHTML = tagsHtml;
-            
-            // 更新联系信息
-            document.getElementById('detail-address').textContent = enterprise.address;
-            document.getElementById('detail-phone').textContent = enterprise.phone;
-            document.getElementById('detail-email').textContent = enterprise.email;
-            document.getElementById('detail-website').textContent = enterprise.website;
-            
-            // 更新企业介绍
-            // 增强企业介绍的内容和格式
-            let enhancedDescription = enterprise.description;
-            
-            // 添加企业亮点和特色
-            if (enterprise.type === '生产企业') {
-                enhancedDescription += `
-                <div class="highlight">
-                    <strong>企业特色：</strong>
-                    <ul>
-                        <li>专业的设计研发团队，紧跟时尚潮流</li>
-                        <li>现代化生产设备，确保产品质量</li>
-                        <li>严格的质量控制体系，产品安全可靠</li>
-                        <li>完善的客户服务体系，提供优质服务</li>
-                    </ul>
-                </div>
-                `;
-            } else if (enterprise.type === '设计企业') {
-                enhancedDescription += `
-                <div class="highlight">
-                    <strong>设计特色：</strong>
-                    <ul>
-                        <li>创新的设计理念，引领童装时尚潮流</li>
-                        <li>专业的设计团队，拥有丰富的行业经验</li>
-                        <li>注重环保与舒适，关爱儿童健康成长</li>
-                        <li>定期推出新品系列，满足市场需求</li>
-                    </ul>
-                </div>
-                `;
-            } else if (enterprise.type === '原材料供应') {
-                enhancedDescription += `
-                <div class="highlight">
-                    <strong>材料特色：</strong>
-                    <ul>
-                        <li>优质的面料选材，确保产品品质</li>
-                        <li>环保认证材料，安全健康无害</li>
-                        <li>多样化的面料选择，满足不同需求</li>
-                        <li>稳定的供应链，保证交货及时</li>
-                    </ul>
-                </div>
-                `;
-            } else if (enterprise.type === '销售渠道') {
-                enhancedDescription += `
-                <div class="highlight">
-                    <strong>渠道优势：</strong>
-                    <ul>
-                        <li>广泛的销售网络，覆盖全国主要市场</li>
-                        <li>线上线下结合，多渠道销售模式</li>
-                        <li>专业的营销团队，提供精准营销服务</li>
-                        <li>完善的物流配送系统，确保配送及时</li>
-                    </ul>
-                        </div>
-                `;
-            } else if (enterprise.type === '配套服务') {
-                enhancedDescription += `
-                <div class="highlight">
-                    <strong>服务特色：</strong>
-                    <ul>
-                        <li>专业的服务团队，提供一站式解决方案</li>
-                        <li>个性化定制服务，满足客户特殊需求</li>
-                        <li>快速响应机制，及时解决客户问题</li>
-                        <li>持续的服务创新，提升客户体验</li>
-                    </ul>
-                    </div>
-                `;
+
+            let enterprise = null;
+            try {
+                const origin = backendOrigin();
+                const token = getToken();
+                const response = await fetch(origin + '/api/enterprises/' + id, {
+                    headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+                });
+                const result = await response.json();
+                if (result.code === 200 && result.data) {
+                    enterprise = result.data;
+                }
+            } catch (e) {
+                console.log('后端API暂不可用，使用本地数据');
             }
-            
-            // 添加企业发展历程
-            enhancedDescription += `
-            <p><strong>发展历程：</strong></p>
-            <p>${enterprise.name}自成立以来，始终秉承"质量第一、客户至上"的经营理念，不断提升产品质量和服务水平。经过多年发展，公司已成为织里童装产业的重要一员，为织里童装产业的发展做出了积极贡献。</p>
-            <p>未来，${enterprise.name}将继续坚持创新发展，不断提升产品品质和服务水平，为客户提供更优质的产品和服务，为织里童装产业的发展贡献更大力量。</p>
-            `;
-            
-            document.getElementById('detail-description').innerHTML = enhancedDescription;
-            
-            // 更新认证信息
-            let certificatesHtml = '';
-            enterprise.certificates.forEach(cert => {
-                certificatesHtml += `
-                    <div class="certificate-item">
-                        <i class="bi bi-check-circle-fill"></i>
-                        <span>${cert}</span>
-                    </div>
-                `;
-            });
-            document.getElementById('detail-certificates').innerHTML = certificatesHtml;
+
+            if (!enterprise) {
+                enterprise = fallbackEnterpriseData[id];
+            }
+
+            if (!enterprise) {
+                alert('未找到企业信息');
+                window.location.href = 'enterprise.html';
+                return;
+            }
+
+            document.title = enterprise.name + ' - 企业详情';
+            document.getElementById('enterprise-name-breadcrumb').textContent = enterprise.name;
+            document.getElementById('detail-logo').src = enterprise.logo || '../images/company/company-logo1.jpg';
+            document.getElementById('detail-logo').alt = enterprise.name;
+            if (document.getElementById('detail-logo').naturalWidth === 0) {
+                document.getElementById('detail-logo').src = '../images/company/company-logo1.jpg';
+            }
+            document.getElementById('detail-name').textContent = enterprise.name;
+
+            var tagsHtml = '<span class="tag type">' + (enterprise.type || '企业') + '</span>';
+            tagsHtml += '<span class="tag scale">' + (enterprise.scale || '—') + '</span>';
+            if (enterprise.cert) {
+                tagsHtml += '<span class="tag cert">' + enterprise.cert + '</span>';
+            }
+            document.getElementById('detail-tags').innerHTML = tagsHtml;
+
+            document.getElementById('detail-address').textContent = enterprise.address || '暂未提供';
+            document.getElementById('detail-phone').textContent = enterprise.phone || '暂未提供';
+            document.getElementById('detail-email').textContent = enterprise.email || '暂未提供';
+            document.getElementById('detail-website').textContent = enterprise.website || '暂未提供';
+
+            var desc = enterprise.description || '';
+            if (enterprise.type === '生产企业') {
+                desc += '<div class="highlight"><strong>企业特色：</strong><ul><li>专业的设计研发团队，紧跟时尚潮流</li><li>现代化生产设备，确保产品质量</li><li>严格的质量控制体系，产品安全可靠</li></ul></div>';
+            } else if (enterprise.type === '设计企业') {
+                desc += '<div class="highlight"><strong>设计特色：</strong><ul><li>创新的设计理念，引领童装时尚潮流</li><li>专业的设计团队，拥有丰富的行业经验</li><li>注重环保与舒适，关爱儿童健康成长</li></ul></div>';
+            } else if (enterprise.type === '原材料供应') {
+                desc += '<div class="highlight"><strong>材料特色：</strong><ul><li>优质的面料选材，确保产品品质</li><li>环保认证材料，安全健康无害</li><li>稳定的供应链，保证交货及时</li></ul></div>';
+            } else if (enterprise.type === '销售渠道') {
+                desc += '<div class="highlight"><strong>渠道优势：</strong><ul><li>广泛的销售网络，覆盖全国主要市场</li><li>线上线下结合，多渠道销售模式</li><li>完善的物流配送系统，确保配送及时</li></ul></div>';
+            } else if (enterprise.type === '配套服务') {
+                desc += '<div class="highlight"><strong>服务特色：</strong><ul><li>专业的服务团队，提供一站式解决方案</li><li>快速响应机制，及时解决客户问题</li><li>持续的服务创新，提升客户体验</li></ul></div>';
+            }
+            document.getElementById('detail-description').innerHTML = desc;
+
+            var certs = enterprise.certificates;
+            if (certs && certs.length > 0) {
+                var certHtml = '';
+                for (var i = 0; i < certs.length; i++) {
+                    certHtml += '<div class="certificate-item"><i class="bi bi-check-circle-fill"></i><span>' + certs[i] + '</span></div>';
+                }
+                document.getElementById('detail-certificates').innerHTML = certHtml;
+            }
         }
-        
-        // 页面加载完成后执行
+
         document.addEventListener('DOMContentLoaded', loadEnterpriseDetail);
     </script>
 </body>

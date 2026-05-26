@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>新闻详情 - 织里镇童装产业协同管理信息系统</title>
+    <title>新闻详情 - 织里镇童装产业协同管理平台</title>
     <link rel="stylesheet" href="../css/common.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-plus/dist/index.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -208,8 +208,8 @@
         <header class="header">
             <div class="container">
                 <div class="logo">
-                    <img src="../images/logo.png" alt="织里镇童装产业协同管理信息系统">
-                    <h1>织里镇童装产业协同管理信息系统</h1>
+                    <img src="../images/logo.png" alt="织里镇童装产业协同管理平台">
+                    <h1>织里镇童装产业协同管理平台</h1>
                 </div>
                 <nav class="main-nav">
                     <ul>
@@ -224,8 +224,10 @@
                     </ul>
                 </nav>
                 <div class="user-info">
-                    <a href="login.html" class="btn btn-login">登录</a>
-                    <a href="register.html" class="btn btn-register">注册</a>
+                    <div class="user-info-guest">
+                        <a href="login.html" class="btn btn-login">登录</a>
+                        <a href="register.html" class="btn btn-register">注册</a>
+                    </div>
                 </div>
             </div>
         </header>
@@ -295,8 +297,8 @@
             <div class="container">
                 <div class="footer-content">
                     <div class="footer-logo">
-                        <img src="../images/logo-footer.png" alt="织里镇童装产业协同管理信息系统">
-                        <p>织里镇童装产业协同管理信息系统</p>
+                        <img src="../images/logo-footer.png" alt="织里镇童装产业协同管理平台">
+                        <p>织里镇童装产业协同管理平台</p>
                     </div>
                     <div class="footer-links">
                         <div class="link-group">
@@ -340,12 +342,13 @@
                     </div>
                 </div>
                 <div class="footer-bottom">
-                    <p>© 2023 织里镇童装产业协同管理信息系统 版权所有 浙ICP备XXXXXXXX号</p>
+                    <p>© 2026 织里镇童装产业协同管理平台 版权所有 浙ICP备XXXXXXXX号</p>
                 </div>
             </div>
         </footer>
     </div>
 
+    <script src="../js/auth-header.js"></script>
     <script src="../js/common.js"></script>
     <script>
         // 新闻数据对象，在实际项目中应该通过后端API获取
@@ -489,7 +492,7 @@
             // 更新面包屑和标题
             document.getElementById('breadcrumb-title').innerText = news.title;
             document.getElementById('news-title').innerText = news.title;
-            document.title = news.title + ' - 织里镇童装产业协同管理信息系统';
+            document.title = news.title + ' - 织里镇童装产业协同管理平台';
             
             // 更新元数据
             document.getElementById('news-date').innerText = news.date;
