@@ -1,0 +1,14 @@
+.git/
+.idea/
+.vscode/
+target/
+build/
+dist/
+logs/
+temp/
+*.log
+*.tmp
+*.bak
+*.old
+*.pdb
+
